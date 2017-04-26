@@ -12,6 +12,20 @@
  * @append ietf/rfc5234-core-abnf.pegjs
  */
 
+{
+  function extractOptional(optional, index) {
+    return optional ? optional[index] : null;
+  }
+
+  function extractList(list, index) {
+    return list.map(element => element[index]);
+  }
+
+  function buildList(head, tail, index) {
+    return [head].concat(extractList(tail, index));
+  }
+}
+
 module_stmt
   = optsep module_keyword sep identifier_arg_str optsep "{" stmtsep module_header_stmts linkage_stmts meta_stmts revision_stmts body_stmts "}" optsep
 
@@ -863,10 +877,6 @@ augment_arg_str
 augment_arg
   = absolute_schema_nodeid
 
-// CHANGED moved to yang-generic
-// unknown_statement
-// unknown_statement2
-
 when_stmt
   = when_keyword sep string optsep (";" / "{" stmtsep when_stmt_subs_ "}")
 
@@ -1303,9 +1313,6 @@ prefix_arg_str
 prefix_arg
   = prefix
 
-// CHANGED moved to yang-generic
-// prefix
-
 identifier_arg_str
   = string_quoted_
   { parse(text(), 'identifier_arg'); return text(); }
@@ -1314,9 +1321,6 @@ identifier_arg_str
 identifier_arg
   = identifier
 
-// CHANGED moved to yang-generic
-// identifier
-
 identifier_ref_arg_str
   = string_quoted_
   { parse(text(), 'identifier_ref_arg'); return text(); }
@@ -1324,9 +1328,6 @@ identifier_ref_arg_str
 
 identifier_ref_arg
   = (prefix ":")? identifier
-
-// CHANGED moved to yang-generic
-// string
 
 integer_value
   = "-" non_negative_integer_value
@@ -1346,20 +1347,24 @@ stmtend
   = ";"
   / "{" unknown_statement* "}"
 
-// CHANGED moved to yang-generic
-// sep
-// optsep
-// stmtsep
-// line_break
-
 non_zero_digit
   = [1-9]
 
 decimal_value
   = integer_value ("." zero_integer_value)
 
-// CHANGED moved to yang-generic
-// SQUOTE
+/* rfc6020-yang-generic.pegjs */
+/*
+ * YANG - A Data Modeling Language for the Network Configuration Protocol (NETCONF)
+ *
+ * http://tools.ietf.org/html/rfc6020
+ *
+ * Limitations & cleanup
+ * - this is a generic grammar parsing only "unknown" i.e. generic statements
+ *
+ * @append ietf/rfc5234-core-abnf.pegjs
+ */
+
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
@@ -1390,21 +1395,11 @@ string
   / string_unquoted_
 
 string_quoted_
-  = DQUOTE head:$(!DQUOTE .)* DQUOTE tail:(optsep "+" optsep string_quoted_)* {
-    string = [head];
-    tail = tail || [];
-    tail.forEach(function(item) {
-      string.push(item[3]);
-    });
-    return tail.join('');
+  = DQUOTE head:$(!DQUOTE .)* DQUOTE tail:(optsep "+" optsep DQUOTE $(!DQUOTE .)* DQUOTE)* {
+    return buildList(head, tail, 4).join('');
   }
-  / SQUOTE head:$(!SQUOTE .)* SQUOTE tail:(optsep "+" optsep string_quoted_)* {
-    string = [head];
-    tail = tail || [];
-    tail.forEach(function(item) {
-      string.push(item[3]);
-    });
-    return tail.join('');
+  / SQUOTE head:$(!SQUOTE .)* SQUOTE tail:(optsep "+" optsep SQUOTE $(!SQUOTE .)* SQUOTE)* {
+    return buildList(head, tail, 4).join('');
   }
 
 string_unquoted_
@@ -1443,6 +1438,19 @@ line_break
 // ' (Single Quote)
 SQUOTE
   = "'"
+
+/* ietf/rfc3986-uri.pegjs */
+/*
+ * Uniform Resource Identifier (URI): Generic Syntax
+ *
+ * http://tools.ietf.org/html/rfc3986
+ *
+ * <host> element has been renamed to <hostname> as a dirty workaround for
+ * element being re-defined with another meaning in HTTPbis
+ *
+ * @append ietf/rfc5234-core-abnf.pegjs
+ */
+
 /* http://tools.ietf.org/html/rfc3986#section-2.1 Percent-Encoding */
 pct_encoded
   = $("%" HEXDIG HEXDIG)
@@ -1656,7 +1664,15 @@ relative_part
 /* http://tools.ietf.org/html/rfc3986#section-4.3 Absolute URI */
 absolute_URI
   = scheme ":" hier_part ("?" query)?
-  
+
+/* ietf/rfc5234-core-abnf.pegjs */
+/*
+ * Augmented BNF for Syntax Specifications: ABNF
+ *
+ * http://tools.ietf.org/html/rfc5234
+ */
+
+/* http://tools.ietf.org/html/rfc5234#appendix-B Core ABNF of ABNF */  
 ALPHA
   = [\x41-\x5A]
   / [\x61-\x7A]
