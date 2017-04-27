@@ -27,15 +27,36 @@
 }
 
 module_stmt
-  = optsep module_keyword sep identifier_arg_str optsep "{" stmtsep module_header_stmts linkage_stmts meta_stmts revision_stmts body_stmts "}" optsep
+  = optsep k:module_keyword sep i:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+    return {
+	  type:k,
+	  id:i,
+	  header:h,
+	  linkage:l,
+	  meta:m,
+	  revision:r,
+	  body:b
+	};
+  }
 
 submodule_stmt
-  = optsep submodule_keyword sep identifier_arg_str optsep "{" stmtsep submodule_header_stmts linkage_stmts meta_stmts revision_stmts body_stmts "}" optsep
-
+  = optsep k:submodule_keyword sep i:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+    return {
+	  type:k,
+	  id:i,
+	  header:h,
+	  linkage:l,
+	  meta:m,
+	  revision:r,
+	  body:b
+	};
+  }
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 module_header_stmts
-  = (module_header_stmt_ stmtsep)*
+  = l:(module_header_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 module_header_stmt_
   = yang_version_stmt
@@ -45,7 +66,9 @@ module_header_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 submodule_header_stmts
-  = (submodule_header_stmt_ stmtsep)*
+  = l:(submodule_header_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 submodule_header_stmt_
   = yang_version_stmt
@@ -54,7 +77,9 @@ submodule_header_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 meta_stmts
-  = (meta_stmt_ stmtsep)*
+  = l:(meta_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 meta_stmt_
   = organization_stmt
@@ -65,17 +90,23 @@ meta_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 linkage_stmts
-  = (linkage_stmt_ stmtsep)*
+  = l:(linkage_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 linkage_stmt_
   = import_stmt
   / include_stmt
 
 revision_stmts
-  = (revision_stmt stmtsep)*
+  = l:(revision_stmt stmtsep)* {
+    return extractList(l, 0);
+  }
 
 body_stmts
-  = (body_stmt_ stmtsep)*
+  = l:(body_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 body_stmt_
   = extension_stmt
@@ -99,59 +130,131 @@ data_def_stmt
   / uses_stmt
 
 yang_version_stmt
-  = yang_version_keyword sep yang_version_arg_str optsep stmtend
+  = k:yang_version_keyword sep v:yang_version_arg_str optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 yang_version_arg_str
-  = string_quoted_
-  { parse(text(), 'yang_version_arg'); return text(); }
+  = DQUOTE v:yang_version_arg DQUOTE { return v; }
+  / SQUOTE v:yang_version_arg SQUOTE { return v; }
   / yang_version_arg
 
 yang_version_arg
   = "1"
 
 import_stmt
-  = import_keyword sep identifier_arg_str optsep "{" stmtsep prefix_stmt stmtsep (revision_date_stmt stmtsep)?
-"}"
+  = k:import_keyword sep i:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
+"}" {
+  return {
+    type:k,
+	id:i,
+	prefix:p,
+	revision_date:extractOptional(d, 0)
+  };
+}
 
 include_stmt
-  = include_keyword sep identifier_arg_str optsep (";" / "{" stmtsep (revision_date_stmt stmtsep)? "}")
+  = k:include_keyword sep i:identifier_arg_str optsep (";" / "{" stmtsep d:(revision_date_stmt stmtsep)? "}") {
+    return {
+	  type:k,
+	  id:i,
+	  revision_date:extractOptional(d, 0)
+	};
+  }
 
 namespace_stmt
-  = namespace_keyword sep uri_str optsep stmtend
+  = k:namespace_keyword sep u:uri_str optsep stmtend {
+    return {
+	  type:k,
+	  uri:u
+	};
+  }
 
 uri_str
-  = string_quoted_
-  { parse(text(), 'URI') }
+  = DQUOTE u:URI DQUOTE { return u; }
+  / SQUOTE u:URI SQUOTE { return u; }
   / URI
 
 prefix_stmt
-  = prefix_keyword sep prefix_arg_str optsep stmtend
+  = k:prefix_keyword sep p:prefix_arg_str optsep stmtend {
+    return {
+	  type:k,
+	  prefix:p
+	};
+  }
 
 belongs_to_stmt
-  = belongs_to_keyword sep identifier_arg_str optsep "{" stmtsep prefix_stmt stmtsep "}"
+  = k:belongs_to_keyword sep i:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
+    return {
+	  type:k,
+	  id:i,
+	  prefix:p
+	};
+  }
 
 organization_stmt
-  = organization_keyword sep string optsep stmtend
+  = k:organization_keyword sep v:string optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 contact_stmt
-  = contact_keyword sep string optsep stmtend
+  = k:contact_keyword sep v:string optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 description_stmt
-  = description_keyword sep string optsep stmtend
+  = k:description_keyword sep v:string optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 reference_stmt
-  = reference_keyword sep string optsep stmtend
+  = k:reference_keyword sep v:string optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 units_stmt
-  = units_keyword sep string optsep stmtend
+  = k:units_keyword sep v:string optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 revision_stmt
-  = revision_keyword sep revision_date optsep (";" / "{" stmtsep revision_stmt_subs_ "}")
+  = k:revision_keyword sep d:revision_date optsep s:revision_stmt_subs {
+    return {
+	  type:k,
+	  date:d,
+	  subs:s
+	};
+  }
 
+revision_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:revision_stmt_subs_ "}" { return s; }
+  
+  
 // CHANGE order doesn't matter
 // CHANGE don't check repetition count
 revision_stmt_subs_
-  = (revision_stmt_sub_ stmtsep)*
+  = l:(revision_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 revision_stmt_sub_
   = description_stmt
@@ -161,15 +264,32 @@ revision_date
   = date_arg_str
 
 revision_date_stmt
-  = revision_date_keyword sep revision_date stmtend
+  = k:revision_date_keyword sep d:revision_date stmtend {
+    return {
+	  type:k,
+	  date:d
+	};
+  }
 
 extension_stmt
-  = extension_keyword sep identifier_arg_str optsep (";" / "{" stmtsep extension_stmt_subs_ "}")
+  = k:extension_keyword sep i:identifier_arg_str optsep s:extension_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+extension_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:extension_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 extension_stmt_subs_
-  = (extension_stmt_sub_ stmtsep)*
+  = l:(extension_stmt_sub_ stmtsep)* {
+    extractList(l, 0);
+  }
 
 extension_stmt_sub_
   = argument_stmt
@@ -178,14 +298,25 @@ extension_stmt_sub_
   / reference_stmt
 
 argument_stmt
-  = argument_keyword sep identifier_arg_str optsep (";" / "{" stmtsep (yin_element_stmt stmtsep)? "}")
+  = k:argument_keyword sep i:identifier_arg_str optsep (";" / "{" stmtsep y:(yin_element_stmt stmtsep)? "}") {
+    return {
+	  type:k,
+	  id:i,
+	  yin:extractOptional(y, 0)
+	};
+  }
 
 yin_element_stmt
-  = yin_element_keyword sep yin_element_arg_str stmtend
+  = k:yin_element_keyword sep v:yin_element_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 yin_element_arg_str
-  = string_quoted_
-  { parse(text(), 'yin_element_arg'); return text(); }
+  = DQUOTE y:yin_element_arg DQUOTE { return y; }
+  / SQUOTE y:yin_element_arg SQUOTE { return y; }
   / yin_element_arg
 
 yin_element_arg
@@ -193,12 +324,24 @@ yin_element_arg
   / false_keyword
 
 identity_stmt
-  = identity_keyword sep identifier_arg_str optsep (";" / "{" stmtsep identity_stmt_subs_ "}")
+  = k:identity_keyword sep i:identifier_arg_str optsep s:identity_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+identity_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:identity_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 identity_stmt_subs_
-  = (identity_stmt_sub_ stmtsep)*
+  = l:(identity_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 identity_stmt_sub_
   = base_stmt
@@ -207,15 +350,32 @@ identity_stmt_sub_
   / reference_stmt
 
 base_stmt
-  = base_keyword sep identifier_ref_arg_str optsep stmtend
+  = k:base_keyword sep v:identifier_ref_arg_str optsep stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 feature_stmt
-  = feature_keyword sep identifier_arg_str optsep (";" / "{" stmtsep feature_stmt_subs_ "}")
+  = k:feature_keyword sep i:identifier_arg_str optsep s:feature_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+feature_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:feature_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 feature_stmt_subs_
-  = (feature_stmt_sub_ stmtsep)*
+  = l:(feature_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 feature_stmt_sub_
   = if_feature_stmt
@@ -224,15 +384,28 @@ feature_stmt_sub_
   / reference_stmt
 
 if_feature_stmt
-  = if_feature_keyword sep identifier_ref_arg_str optsep stmtend
+  = k:if_feature_keyword sep i:identifier_ref_arg_str optsep stmtend {
+    return {
+	  type:k,
+	  id:i
+	};
+  }
 
 typedef_stmt
-  = typedef_keyword sep identifier_arg_str optsep "{" stmtsep typedef_stmt_subs_ "}"
+  = k:typedef_keyword sep i:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 typedef_stmt_subs_
-  = (typedef_stmt_sub_ stmtsep)*
+  = l:(typedef_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 typedef_stmt_sub_
   = type_stmt
@@ -243,11 +416,21 @@ typedef_stmt_sub_
   / reference_stmt
 
 type_stmt
-  = type_keyword sep identifier_ref_arg_str optsep (";" / "{" stmtsep type_body_stmts "}")
+  = k:type_keyword sep i:identifier_ref_arg_str optsep b:type_body_stmts {
+    return {
+	  type:k,
+	  id:i,
+	  body:b
+	};
+  }
 
+type_body_stmts 
+  = ";" { return []; }
+  / "{" stmtsep s:type_body_stmts_ "}" { return s; }
+  
 // CHANGE add empty body alternative
 // CHANGE to counteract making all *_restrictions/*_specification rule required
-type_body_stmts
+type_body_stmts_
   = numerical_restrictions
   / decimal64_specification
   / string_restrictions
@@ -262,18 +445,30 @@ type_body_stmts
 
 // CHANGE required
 binary_specification
-  = length_stmt stmtsep
+  = l:length_stmt stmtsep { return l; }
 
 numerical_restrictions
-  = range_stmt stmtsep
+  = r:range_stmt stmtsep { return r; }
 
 range_stmt
-  = range_keyword sep range_arg_str optsep (";" / "{" stmtsep range_stmt_subs_ "}")
+  = k:range_keyword sep v:range_arg_str optsep s:range_stmt_subs {
+    return {
+	  type:k,
+	  value:v,
+	  subs:s
+	};
+  }
 
+range_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:range_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 range_stmt_subs_
-  = (range_stmt_sub_ stmtsep)*
+  = l:(range_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 range_stmt_sub_
   = error_message_stmt
@@ -289,8 +484,8 @@ fraction_digits_stmt
   = fraction_digits_keyword sep fraction_digits_arg_str stmtend
 
 fraction_digits_arg_str
-  = string_quoted_
-  { parse(text(), 'fraction_digits_arg'); return text(); }
+  = DQUOTE v:fraction_digits_arg DQUOTE { return v; }
+  / SQUOTE v:fraction_digits_arg SQUOTE { return v; }
   / fraction_digits_arg
 
 // CHANGE simplify ranges
@@ -302,19 +497,33 @@ fraction_digits_arg
 // CHANGE required
 // CHANGE don't check repetition count
 string_restrictions
-  = (string_restriction_ stmtsep)+
+  = l:(string_restriction_ stmtsep)+ {
+    return extractList(l, 0);
+  }
 
 string_restriction_
   = length_stmt
   / pattern_stmt
 
 length_stmt
-  = length_keyword sep length_arg_str optsep (";" / "{" stmtsep length_stmt_subs_ "}")
+  = k:length_keyword sep i:length_arg_str optsep s:length_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+length_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:length_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 length_stmt_subs_
-  = (length_stmt_sub_ stmtsep)*
+  = l:(length_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 length_stmt_sub_
   = error_message_stmt
@@ -323,12 +532,24 @@ length_stmt_sub_
   / reference_stmt
 
 pattern_stmt
-  = pattern_keyword sep string optsep (";" / "{" stmtsep pattern_stmt_subs_ "}")
+  = k:pattern_keyword sep i:string optsep s:pattern_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+pattern_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:pattern_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 pattern_stmt_subs_
-  = (pattern_stmt_sub_ stmtsep)*
+  = l:(pattern_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 pattern_stmt_sub_
   = error_message_stmt
@@ -337,18 +558,37 @@ pattern_stmt_sub_
   / reference_stmt
 
 default_stmt
-  = default_keyword sep string stmtend
+  = k:default_keyword sep v:string stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 enum_specification
-  = (enum_stmt stmtsep)+
+  = l:(enum_stmt stmtsep)+ {
+    return extractList(l, 0);
+  }
 
 enum_stmt
-  = enum_keyword sep string optsep (";" / "{" stmtsep enum_stmt_subs_ "}")
+  = k:enum_keyword sep v:string optsep s:enum_stmt_subs {
+    return {
+	  type:k,
+	  value:v,
+	  subs:s
+	};
+  }
 
+enum_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:enum_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 enum_stmt_subs_
-  = (enum_stmt_sub_ stmtsep)*
+  = l:(enum_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 enum_stmt_sub_
   = value_stmt
@@ -360,14 +600,24 @@ leafref_specification
   = path_stmt
 
 path_stmt
-  = path_keyword sep path_arg_str stmtend
+  = k:path_keyword sep v:path_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 require_instance_stmt
-  = require_instance_keyword sep require_instance_arg_str stmtend
+  = k:require_instance_keyword sep v:require_instance_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 require_instance_arg_str
-  = string_quoted_
-  { parse(text(), 'require_instance_arg'); return text(); }
+  = DQUOTE v:require_instance_arg DQUOTE { return v; }
+  / SQUOTE v:require_instance_arg SQUOTE { return v; }
   / require_instance_arg
 
 require_instance_arg
@@ -376,24 +626,40 @@ require_instance_arg
 
 // CHANGE required
 instance_identifier_specification
-  = require_instance_stmt stmtsep
+  = r:require_instance_stmt stmtsep { return r; }
 
 identityref_specification
-  = base_stmt stmtsep
+  = b:base_stmt stmtsep { return b; }
 
 union_specification
-  = (type_stmt stmtsep)+
+  = l:(type_stmt stmtsep)+ {
+    return extractList(l, 0);
+  }
 
 bits_specification
-  = (bit_stmt stmtsep)+
+  = l:(bit_stmt stmtsep)+ {
+    return extractList(l, 0);
+  }
 
 bit_stmt
-  = bit_keyword sep identifier_arg_str optsep (";" / "{" stmtsep bit_stmt_subs_ "}")
+  = k:bit_keyword sep i:identifier_arg_str optsep s:bit_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+bit_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:bit_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 bit_stmt_subs_
-  = (bit_stmt_sub_ stmtsep)*
+  = l:(bit_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 bit_stmt_sub_
   = position_stmt
@@ -402,22 +668,32 @@ bit_stmt_sub_
   / reference_stmt
 
 position_stmt
-  = position_keyword sep position_value_arg_str stmtend
+  = k:position_keyword sep v:position_value_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 position_value_arg_str
-  = string_quoted_
-  { parse(text(), 'position_value_arg'); return text(); }
+  = DQUOTE v:position_value_arg DQUOTE { return v; }
+  / SQUOTE v:position_value_arg SQUOTE { return v; }
   / position_value_arg
 
 position_value_arg
   = non_negative_integer_value
 
 status_stmt
-  = status_keyword sep status_arg_str stmtend
+  = k:status_keyword sep v:status_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 status_arg_str
-  = string_quoted_
-  { parse(text(), 'status_arg'); return text(); }
+  = DQUOTE v:status_arg DQUOTE { return v; }
+  / SQUOTE v:status_arg SQUOTE { return v; }
   / status_arg
 
 status_arg
@@ -426,11 +702,16 @@ status_arg
   / deprecated_keyword
 
 config_stmt
-  = config_keyword sep config_arg_str stmtend
+  = k:config_keyword sep v:config_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 config_arg_str
-  = string_quoted_
-  { parse(text(), 'config_arg'); return text(); }
+  = DQUOTE v:config_arg DQUOTE { return v; }
+  / SQUOTE v:config_arg SQUOTE { return v; }
   / config_arg
 
 config_arg
@@ -438,11 +719,16 @@ config_arg
   / false_keyword
 
 mandatory_stmt
-  = mandatory_keyword sep mandatory_arg_str stmtend
+  = k:mandatory_keyword sep v:mandatory_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 mandatory_arg_str
-  = string_quoted_
-  { parse(text(), 'mandatory_arg'); return text(); }
+  = DQUOTE v:mandatory_arg DQUOTE { return v; }
+  / SQUOTE v:mandatory_arg SQUOTE { return v; }
   / mandatory_arg
 
 mandatory_arg
@@ -450,14 +736,19 @@ mandatory_arg
   / false_keyword
 
 presence_stmt
-  = presence_keyword sep string stmtend
+  = k:presence_keyword sep v:string stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 ordered_by_stmt
   = ordered_by_keyword sep ordered_by_arg_str stmtend
 
 ordered_by_arg_str
-  = string_quoted_
-  { parse(text(), 'ordered_by_arg'); return text(); }
+  = DQUOTE v:ordered_by_arg DQUOTE { return v; }
+  / SQUOTE v:ordered_by_arg SQUOTE { return v; }
   / ordered_by_arg
 
 ordered_by_arg
@@ -465,12 +756,24 @@ ordered_by_arg
   / system_keyword
 
 must_stmt
-  = must_keyword sep string optsep (";" / "{" stmtsep must_stmt_subs_ "}")
+  = k:must_keyword sep v:string optsep s:must_stmt_subs {
+    return {
+	  type:k,
+	  value:v,
+	  subs:s
+	};
+  }
 
+must_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:must_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 must_stmt_subs_
-  = (must_stmt_sub_ stmtsep)*
+  = l:(must_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 must_stmt_sub_
   = error_message_stmt
@@ -479,28 +782,48 @@ must_stmt_sub_
   / reference_stmt
 
 error_message_stmt
-  = error_message_keyword sep string stmtend
+  = k:error_message_keyword sep v:string stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 error_app_tag_stmt
-  = error_app_tag_keyword sep string stmtend
+  = k:error_app_tag_keyword sep v:string stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 min_elements_stmt
-  = min_elements_keyword sep min_value_arg_str stmtend
+  = k:min_elements_keyword sep v:min_value_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 min_value_arg_str
-  = string_quoted_
-  { parse(text(), 'min_value_arg'); return text(); }
+  = DQUOTE v:min_value_arg DQUOTE { return v; }
+  / SQUOTE v:min_value_arg SQUOTE { return v; }
   / min_value_arg
 
 min_value_arg
   = non_negative_integer_value
 
 max_elements_stmt
-  = max_elements_keyword sep max_value_arg_str stmtend
+  = k:max_elements_keyword sep v:max_value_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 max_value_arg_str
-  = string_quoted_
-  { parse(text(), 'max_value_arg'); return text(); }
+  = DQUOTE v:max_value_arg DQUOTE { return v; }
+  / SQUOTE v:max_value_arg SQUOTE { return v; }
   / max_value_arg
 
 max_value_arg
@@ -508,23 +831,40 @@ max_value_arg
   / positive_integer_value
 
 value_stmt
-  = value_keyword sep integer_value_arg_str stmtend
+  = k:value_keyword sep v:integer_value_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 integer_value_arg_str
-  = string_quoted_
-  { parse(text(), 'integer_value_arg'); return text(); }
+  = DQUOTE v:integer_value_arg DQUOTE { return v; }
+  / SQUOTE v:integer_value_arg SQUOTE { return v; }
   / integer_value_arg
 
 integer_value_arg
   = integer_value
 
 grouping_stmt
-  = grouping_keyword sep identifier_arg_str optsep (";" / "{" stmtsep grouping_stmt_subs_ "}")
+  = k:grouping_keyword sep i:identifier_arg_str optsep s:grouping_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+grouping_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:grouping_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 grouping_stmt_subs_
-  = (grouping_stmt_sub_ stmtsep)*
+  = l:(grouping_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 grouping_stmt_sub_
   = status_stmt
@@ -535,12 +875,24 @@ grouping_stmt_sub_
   / data_def_stmt
 
 container_stmt
-  = container_keyword sep identifier_arg_str optsep (";" / "{" stmtsep container_stmt_subs_ "}")
+  = k:container_keyword sep i:identifier_arg_str optsep s:container_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+container_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:container_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 container_stmt_subs_
-  = (container_stmt_sub_ stmtsep)*
+  = l:(container_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 container_stmt_sub_
   = when_stmt
@@ -556,12 +908,20 @@ container_stmt_sub_
   / data_def_stmt
 
 leaf_stmt
-  = leaf_keyword sep identifier_arg_str optsep "{" stmtsep leaf_stmt_subs_ "}"
+  = k:leaf_keyword sep i:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 leaf_stmt_subs_
-  = (leaf_stmt_sub_ stmtsep)*
+  = l:(leaf_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 leaf_stmt_sub_
   = when_stmt
@@ -577,12 +937,20 @@ leaf_stmt_sub_
   / reference_stmt
 
 leaf_list_stmt
-  = leaf_list_keyword sep identifier_arg_str optsep "{" stmtsep leaf_list_stmt_subs_ "}"
+  = k:leaf_list_keyword sep i:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 leaf_list_stmt_subs_
-  = (leaf_list_stmt_sub_ stmtsep)*
+  = l:(leaf_list_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 leaf_list_stmt_sub_
   = when_stmt
@@ -599,12 +967,20 @@ leaf_list_stmt_sub_
   / reference_stmt
 
 list_stmt
-  = list_keyword sep identifier_arg_str optsep "{" stmtsep list_stmt_subs_ "}"
-
+  = k:list_keyword sep i:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 list_stmt_subs_
-  = (list_stmt_sub_ stmtsep)*
+  = l:(list_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 list_stmt_sub_
   = when_stmt
@@ -624,34 +1000,56 @@ list_stmt_sub_
   / data_def_stmt
 
 key_stmt
-  = key_keyword sep key_arg_str stmtend
+  = k:key_keyword sep v:key_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 key_arg_str
-  = string_quoted_
-  { parse(text(), 'key_arg'); return text(); }
+  = DQUOTE v:key_arg DQUOTE { return v; }
+  / SQUOTE v:key_arg SQUOTE { return v; }
   / key_arg
 
 key_arg
   = node_identifier (sep node_identifier)*
 
 unique_stmt
-  = unique_keyword sep unique_arg_str stmtend
+  = k:unique_keyword sep v:unique_arg_str stmtend {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 unique_arg_str
-  = string_quoted_
-  { parse(text(), 'unique_arg'); return text(); }
+  = DQUOTE v:unique_arg DQUOTE { return v; }
+  / SQUOTE v:unique_arg SQUOTE { return v; }
   / unique_arg
 
 unique_arg
   = descendant_schema_nodeid (sep descendant_schema_nodeid)*
 
 choice_stmt
-  = choice_keyword sep identifier_arg_str optsep (";" / "{" stmtsep choice_stmt_subs_ "}")
+  = k:choice_keyword sep i:identifier_arg_str optsep s:choice_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+choice_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:choice_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 choice_stmt_subs_
-  = (choice_stmt_sub_ stmtsep)*
+  = l:(choice_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 choice_stmt_sub_
   = when_stmt
@@ -673,12 +1071,24 @@ short_case_stmt
   / anyxml_stmt
 
 case_stmt
-  = case_keyword sep identifier_arg_str optsep (";" / "{" stmtsep case_stmt_subs_ "}")
+  = k:case_keyword sep i:identifier_arg_str optsep s:case_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+case_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:case_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 case_stmt_subs_
-  = (case_stmt_sub_ stmtsep)*
+  = l:(case_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 case_stmt_sub_
   = when_stmt
@@ -689,12 +1099,24 @@ case_stmt_sub_
   / data_def_stmt
 
 anyxml_stmt
-  = anyxml_keyword sep identifier_arg_str optsep (";" / "{" stmtsep anyxml_stmt_subs_ "}")
+  = k:anyxml_keyword sep i:identifier_arg_str optsep s:anyxml_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+anyxml_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:anyxml_stmt_subs_ "}" { return s; }
+    
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 anyxml_stmt_subs_
-  = (anyxml_stmt_sub_ stmtsep)*
+  = l:(anyxml_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 anyxml_stmt_sub_
   = when_stmt
@@ -707,12 +1129,24 @@ anyxml_stmt_sub_
   / reference_stmt
 
 uses_stmt
-  = uses_keyword sep identifier_ref_arg_str optsep (";" / "{" stmtsep uses_stmt_subs_ "}")
+  = k:uses_keyword sep i:identifier_ref_arg_str optsep s:uses_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+uses_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:uses_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 uses_stmt_subs_
-  = (uses_stmt_sub_ stmtsep)*
+  = l:(uses_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 uses_stmt_sub_
   = when_stmt
@@ -724,8 +1158,18 @@ uses_stmt_sub_
   / uses_augment_stmt
 
 refine_stmt
-  = refine_keyword sep refine_arg_str optsep (";" / "{" stmtsep refine_stmt_subs_ "}")
+  = k:refine_keyword sep i:refine_arg_str optsep s:refine_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+refine_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:refine_stmt_subs_ "}" { return s; }
+  
 refine_stmt_subs_
   = refine_container_stmts
   / refine_leaf_stmts
@@ -736,8 +1180,8 @@ refine_stmt_subs_
   / refine_anyxml_stmts
 
 refine_arg_str
-  = string_quoted_
-  { parse(text(), 'refine_arg'); return text(); }
+  = DQUOTE v:refine_arg DQUOTE { return v; }
+  / SQUOTE v:refine_arg SQUOTE { return v; }
   / refine_arg
 
 refine_arg
@@ -746,7 +1190,9 @@ refine_arg
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_container_stmts
-  = (refine_container_stmt_ stmtsep)*
+  = l:(refine_container_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_container_stmt_
   = must_stmt
@@ -758,7 +1204,9 @@ refine_container_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_leaf_stmts
-  = (refine_leaf_stmt_ stmtsep)*
+  = l:(refine_leaf_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_leaf_stmt_
   = must_stmt
@@ -771,7 +1219,9 @@ refine_leaf_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_leaf_list_stmts
-  = (refine_leaf_list_stmt_ stmtsep)*
+  = l:(refine_leaf_list_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_leaf_list_stmt_
   = must_stmt
@@ -784,7 +1234,9 @@ refine_leaf_list_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_list_stmts
-  = (refine_list_stmt_ stmtsep)*
+  = l:(refine_list_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_list_stmt_
   = must_stmt
@@ -797,7 +1249,9 @@ refine_list_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_choice_stmts
-  = (refine_choice_stmt_ stmtsep)*
+  = l:(refine_choice_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_choice_stmt_
   = default_stmt
@@ -809,7 +1263,9 @@ refine_choice_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_case_stmts
-  = (refine_case_stmt_ stmtsep)*
+  = l:(refine_case_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_case_stmt_
   = description_stmt
@@ -818,7 +1274,9 @@ refine_case_stmt_
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_anyxml_stmts
-  = (refine_anyxml_stmt_ stmtsep)*
+  = l:(refine_anyxml_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 refine_anyxml_stmt_
   = must_stmt
@@ -828,12 +1286,20 @@ refine_anyxml_stmt_
   / reference_stmt
 
 uses_augment_stmt
-  = augment_keyword sep uses_augment_arg_str optsep "{" stmtsep uses_augment_stmt_subs_ "}"
+  = k:augment_keyword sep i:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 uses_augment_stmt_subs_
-  = (uses_augment_stmt_sub_ stmtsep)*
+  = l:(uses_augment_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 uses_augment_stmt_sub_
   = when_stmt
@@ -845,20 +1311,28 @@ uses_augment_stmt_sub_
   / case_stmt
 
 uses_augment_arg_str
-  = string_quoted_
-  { parse(text(), 'uses_augment_arg'); return text(); }
+  = DQUOTE v:uses_augment_arg DQUOTE { return v; }
+  / SQUOTE v:uses_augment_arg SQUOTE { return v; }
   / uses_augment_arg
 
 uses_augment_arg
   = descendant_schema_nodeid
 
 augment_stmt
-  = augment_keyword sep augment_arg_str optsep "{" stmtsep augment_stmt_subs_ "}"
+  = k:augment_keyword sep i:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 augment_stmt_subs_
-  = (augment_stmt_sub_ stmtsep)*
+  = l:(augment_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 augment_stmt_sub_
   = when_stmt
@@ -870,32 +1344,56 @@ augment_stmt_sub_
   / case_stmt
 
 augment_arg_str
-  = string_quoted_
-  { parse(text(), 'augment_arg'); return text(); }
+  = DQUOTE v:augment_arg DQUOTE { return v; }
+  / SQUOTE v:augment_arg SQUOTE { return v; }
   / augment_arg
 
 augment_arg
   = absolute_schema_nodeid
 
 when_stmt
-  = when_keyword sep string optsep (";" / "{" stmtsep when_stmt_subs_ "}")
+  = k:when_keyword sep v:string optsep s:when_stmt_subs {
+    return {
+	  type:k,
+	  value:v,
+	  subs:s
+	};
+  }
 
+when_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:when_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 when_stmt_subs_
-  = (when_stmt_sub_ stmtsep)*
+  = l:(when_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 when_stmt_sub_
   = description_stmt
   / reference_stmt
 
 rpc_stmt
-  = rpc_keyword sep identifier_arg_str optsep (";" / "{" stmtsep rpc_stmt_subs_ "}")
+  = k:rpc_keyword sep i:identifier_arg_str optsep s:rpc_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+rpc_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:rpc_stmt_subs_ "}" { return s; }
+    
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 rpc_stmt_subs_
-  = (rpc_stmt_sub_ stmtsep)*
+  = l:(rpc_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 rpc_stmt_sub_
   = if_feature_stmt
@@ -908,12 +1406,19 @@ rpc_stmt_sub_
   / output_stmt
 
 input_stmt
-  = input_keyword optsep "{" stmtsep input_stmt_subs_ "}"
+  = k:input_keyword optsep "{" stmtsep s:input_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 input_stmt_subs_
-  = (input_stmt_sub_ stmtsep)*
+  = l:(input_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 input_stmt_sub_
   = typedef_stmt
@@ -921,12 +1426,19 @@ input_stmt_sub_
   / data_def_stmt
 
 output_stmt
-  = output_keyword optsep "{" stmtsep output_stmt_subs_ "}"
+  = k:output_keyword optsep "{" stmtsep s:output_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  subs:s
+	};
+  }
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 output_stmt_subs_
-  = (output_stmt_sub_ stmtsep)*
+  = l:(output_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 output_stmt_sub_
   = typedef_stmt
@@ -934,12 +1446,24 @@ output_stmt_sub_
   / data_def_stmt
 
 notification_stmt
-  = notification_keyword sep identifier_arg_str optsep (";" / "{" stmtsep notification_stmt_subs_ "}")
+  = k:notification_keyword sep i:identifier_arg_str optsep s:notification_stmt_subs {
+    return {
+	  type:k,
+	  id:i,
+	  subs:s
+	};
+  }
 
+notification_stmt_subs
+  = ";" { return []; }
+  / "{" stmtsep s:notification_stmt_subs "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 notification_stmt_subs_
-  = (notification_stmt_sub_ stmtsep)*
+  = l:(notification_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 notification_stmt_sub_
   = if_feature_stmt
@@ -951,12 +1475,21 @@ notification_stmt_sub_
   / data_def_stmt
 
 deviation_stmt
-  = deviation_keyword sep deviation_arg_str optsep "{" stmtsep deviation_stmt_subs_ "}"
+  = k:deviation_keyword sep v:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
+    return {
+	  type:k,
+	  value:v,
+	  subs:s
+	};
+  }
 
+ 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 deviation_stmt_subs_
-  = (deviation_stmt_sub_ stmtsep)*
+  = l:(deviation_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 deviation_stmt_sub_
   = description_stmt
@@ -967,23 +1500,40 @@ deviation_stmt_sub_
   / deviate_delete_stmt
 
 deviation_arg_str
-  = string_quoted_
-  { parse(text(), 'deviation_arg'); return text(); }
+  = DQUOTE v:deviation_arg DQUOTE { return v; }
+  / SQUOTE v:deviation_arg SQUOTE { return v; }
   / deviation_arg
 
 deviation_arg
   = absolute_schema_nodeid
 
 deviate_not_supported_stmt
-  = deviate_keyword sep not_supported_keyword optsep (";" / "{" stmtsep "}")
+  = k:deviate_keyword sep v:not_supported_keyword optsep (";" / "{" stmtsep "}") {
+    return {
+	  type:k,
+	  value:v
+	};
+  }
 
 deviate_add_stmt
-  = deviate_keyword sep add_keyword optsep (";" / "{" stmtsep deviate_add_stmt_subs_ "}")
+  = k:deviate_keyword sep sk:add_keyword optsep s:deviate_add_stmt_subs {
+    return {
+	  type:k,
+	  sub_type:sk,
+	  subs:s
+	};
+  }
 
+deviate_add_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:deviate_add_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 deviate_add_stmt_subs_
-  = (deviate_add_stmt_sub_ stmtsep)*
+  = l:(deviate_add_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 deviate_add_stmt_sub_
   = units_stmt
@@ -996,12 +1546,24 @@ deviate_add_stmt_sub_
   / max_elements_stmt
 
 deviate_delete_stmt
-  = deviate_keyword sep delete_keyword optsep (";" / "{" stmtsep deviate_delete_stmt_subs_ "}")
+  = k:deviate_keyword sep sk:delete_keyword optsep s:deviate_delete_stmt_subs {
+    return {
+	  type:k,
+	  sub_type:sk,
+	  subs:s
+	};
+  }
 
+deviate_delete_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:deviate_delete_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 deviate_delete_stmt_subs_
-  = (deviate_delete_stmt_sub_ stmtsep)*
+  = l:(deviate_delete_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 deviate_delete_stmt_sub_
   = units_stmt
@@ -1010,12 +1572,24 @@ deviate_delete_stmt_sub_
   / default_stmt
 
 deviate_replace_stmt
-  = deviate_keyword sep replace_keyword optsep (";" / "{" stmtsep deviate_replace_stmt_subs_ "}")
+  = k:deviate_keyword sep sk:replace_keyword optsep s:deviate_replace_stmt_subs {
+    return {
+	  type:k,
+	  sub_type:sk,
+	  subs:s
+	};
+  }
 
+deviate_replace_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep s:deviate_replace_stmt_subs_ "}" { return s; }
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 deviate_replace_stmt_subs_
-  = (deviate_replace_stmt_sub_ stmtsep)*
+  = l:(deviate_replace_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
 
 deviate_replace_stmt_sub_
   = type_stmt
@@ -1029,15 +1603,19 @@ deviate_replace_stmt_sub_
 // Ranges
 
 range_arg_str
-  = string_quoted_
-  { parse(text(), 'range_arg'); return text(); }
+  = DQUOTE v:range_arg DQUOTE { return v; }
+  / SQUOTE v:range_arg SQUOTE { return v; }
   / range_arg
-
+  
 range_arg
-  = range_part (optsep "|" optsep range_part)*
+  = h:range_part t:(optsep "|" optsep range_part)* {
+    return buildList(h, t, 3);
+  }
 
 range_part
-  = range_boundary (optsep ".." optsep range_boundary)?
+  = h:range_boundary t:(optsep ".." optsep range_boundary)? {
+    return [h].concat(extractOptional(t, 3));
+  }
 
 range_boundary
   = min_keyword
@@ -1048,15 +1626,19 @@ range_boundary
 // Lengths
 
 length_arg_str
-  = string_quoted_
-  { parse(text(), 'length_arg'); return text(); }
+  = DQUOTE v:length_arg DQUOTE { return v; }
+  / SQUOTE v:length_arg SQUOTE { return v; }
   / length_arg
 
 length_arg
-  = length_part (optsep "|" optsep length_part)*
+  = h:length_part t:(optsep "|" optsep length_part)* {
+    return buildList(h, t, 3);
+  }
 
 length_part
-  = length_boundary (optsep ".." optsep length_boundary)?
+  = h:length_boundary t:(optsep ".." optsep length_boundary)? {
+    return [h].concat(extractOptional(t, 3));
+  }
 
 length_boundary
   = min_keyword
@@ -1066,8 +1648,8 @@ length_boundary
 // Date
 
 date_arg_str
-  = string_quoted_
-  { parse(text(), 'date_arg'); return text(); }
+  = DQUOTE v:date_arg DQUOTE { return v; }
+  / SQUOTE v:date_arg SQUOTE { return v; }
   / date_arg
 
 date_arg
@@ -1106,8 +1688,8 @@ pos
 // leafref path
 
 path_arg_str
-  = string_quoted_
-  { parse(text(), 'path_arg'); return text(); }
+  = DQUOTE v:path_arg DQUOTE { return v; }
+  / SQUOTE v:path_arg SQUOTE { return v; }
   / path_arg
 
 path_arg
@@ -1306,24 +1888,24 @@ current_function_invocation
 // Basic Rules
 
 prefix_arg_str
-  = string_quoted_
-  { parse(text(), 'prefix_arg'); return text(); }
+  = DQUOTE v:prefix_arg DQUOTE { return v; }
+  / SQUOTE v:prefix_arg SQUOTE { return v; }
   / prefix_arg
 
 prefix_arg
   = prefix
 
 identifier_arg_str
-  = string_quoted_
-  { parse(text(), 'identifier_arg'); return text(); }
+  = DQUOTE v:identifier_arg DQUOTE { return v; }
+  / SQUOTE v:identifier_arg SQUOTE { return v; }
   / identifier_arg
 
 identifier_arg
   = identifier
 
 identifier_ref_arg_str
-  = string_quoted_
-  { parse(text(), 'identifier_ref_arg'); return text(); }
+  = DQUOTE v:identifier_ref_arg DQUOTE { return v; }
+  / SQUOTE v:identifier_ref_arg SQUOTE { return v; }
   / identifier_ref_arg
 
 identifier_ref_arg
