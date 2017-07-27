@@ -14,11 +14,11 @@
 
 {
   function extractOptional(optional, index) {
-    return optional ? optional[index] : null;
+    return optional != null ? optional[index] : null;
   }
 
   function extractList(list, index) {
-    return list.map(element => element[index]);
+    return list.map(function (element) { return element[index];});
   }
 
   function buildList(head, tail, index) {
@@ -27,10 +27,10 @@
 }
 
 module_stmt
-  = optsep k:module_keyword sep i:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+  = optsep k:module_keyword sep n:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  header:h,
 	  linkage:l,
 	  meta:m,
@@ -40,10 +40,10 @@ module_stmt
   }
 
 submodule_stmt
-  = optsep k:submodule_keyword sep i:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+  = optsep k:submodule_keyword sep n:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  header:h,
 	  linkage:l,
 	  meta:m,
@@ -146,21 +146,28 @@ yang_version_arg
   = "1"
 
 import_stmt
-  = k:import_keyword sep i:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
+  = k:import_keyword sep n:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
 "}" {
   return {
     type:k,
-	id:i,
+	name:n,
 	prefix:p,
 	revision_date:extractOptional(d, 0)
   };
 }
 
 include_stmt
-  = k:include_keyword sep i:identifier_arg_str optsep (";" / "{" stmtsep d:(revision_date_stmt stmtsep)? "}") {
+  = k:include_keyword sep n:identifier_arg_str optsep ";" { 
+      return {
+	  type:k,
+	  name:n,
+	  revision_date:null
+	};
+  } 
+  / k:include_keyword sep n:identifier_arg_str optsep "{" stmtsep d:(revision_date_stmt stmtsep)? "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  revision_date:extractOptional(d, 0)
 	};
   }
@@ -187,10 +194,10 @@ prefix_stmt
   }
 
 belongs_to_stmt
-  = k:belongs_to_keyword sep i:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
+  = k:belongs_to_keyword sep n:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  prefix:p
 	};
   }
@@ -272,10 +279,10 @@ revision_date_stmt
   }
 
 extension_stmt
-  = k:extension_keyword sep i:identifier_arg_str optsep s:extension_stmt_subs {
+  = k:extension_keyword sep n:identifier_arg_str optsep s:extension_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -298,10 +305,17 @@ extension_stmt_sub_
   / reference_stmt
 
 argument_stmt
-  = k:argument_keyword sep i:identifier_arg_str optsep (";" / "{" stmtsep y:(yin_element_stmt stmtsep)? "}") {
+  = k:argument_keyword sep n:identifier_arg_str optsep ";" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
+	  yin:null
+	};
+  } 
+  / k:argument_keyword sep n:identifier_arg_str optsep "{" stmtsep y:(yin_element_stmt stmtsep)? "}" {
+    return {
+	  type:k,
+	  name:n,
 	  yin:extractOptional(y, 0)
 	};
   }
@@ -324,10 +338,10 @@ yin_element_arg
   / false_keyword
 
 identity_stmt
-  = k:identity_keyword sep i:identifier_arg_str optsep s:identity_stmt_subs {
+  = k:identity_keyword sep n:identifier_arg_str optsep s:identity_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -358,10 +372,10 @@ base_stmt
   }
 
 feature_stmt
-  = k:feature_keyword sep i:identifier_arg_str optsep s:feature_stmt_subs {
+  = k:feature_keyword sep n:identifier_arg_str optsep s:feature_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -384,18 +398,18 @@ feature_stmt_sub_
   / reference_stmt
 
 if_feature_stmt
-  = k:if_feature_keyword sep i:identifier_ref_arg_str optsep stmtend {
+  = k:if_feature_keyword sep n:identifier_ref_arg_str optsep stmtend {
     return {
 	  type:k,
-	  id:i
+	  name:n
 	};
   }
 
 typedef_stmt
-  = k:typedef_keyword sep i:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
+  = k:typedef_keyword sep n:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -416,10 +430,10 @@ typedef_stmt_sub_
   / reference_stmt
 
 type_stmt
-  = k:type_keyword sep i:identifier_ref_arg_str optsep b:type_body_stmts {
+  = k:type_keyword sep n:identifier_ref_arg_str optsep b:type_body_stmts {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  body:b
 	};
   }
@@ -506,10 +520,10 @@ string_restriction_
   / pattern_stmt
 
 length_stmt
-  = k:length_keyword sep i:length_arg_str optsep s:length_stmt_subs {
+  = k:length_keyword sep n:length_arg_str optsep s:length_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -532,10 +546,10 @@ length_stmt_sub_
   / reference_stmt
 
 pattern_stmt
-  = k:pattern_keyword sep i:string optsep s:pattern_stmt_subs {
+  = k:pattern_keyword sep n:string optsep s:pattern_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -642,10 +656,10 @@ bits_specification
   }
 
 bit_stmt
-  = k:bit_keyword sep i:identifier_arg_str optsep s:bit_stmt_subs {
+  = k:bit_keyword sep n:identifier_arg_str optsep s:bit_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -847,10 +861,10 @@ integer_value_arg
   = integer_value
 
 grouping_stmt
-  = k:grouping_keyword sep i:identifier_arg_str optsep s:grouping_stmt_subs {
+  = k:grouping_keyword sep n:identifier_arg_str optsep s:grouping_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -875,10 +889,10 @@ grouping_stmt_sub_
   / data_def_stmt
 
 container_stmt
-  = k:container_keyword sep i:identifier_arg_str optsep s:container_stmt_subs {
+  = k:container_keyword sep n:identifier_arg_str optsep s:container_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -908,10 +922,10 @@ container_stmt_sub_
   / data_def_stmt
 
 leaf_stmt
-  = k:leaf_keyword sep i:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
+  = k:leaf_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -937,10 +951,10 @@ leaf_stmt_sub_
   / reference_stmt
 
 leaf_list_stmt
-  = k:leaf_list_keyword sep i:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
+  = k:leaf_list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -967,10 +981,10 @@ leaf_list_stmt_sub_
   / reference_stmt
 
 list_stmt
-  = k:list_keyword sep i:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
+  = k:list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1013,7 +1027,9 @@ key_arg_str
   / key_arg
 
 key_arg
-  = node_identifier (sep node_identifier)*
+  = h:node_identifier t:(sep node_identifier)* {
+    return buildList(h, t, 1);
+  }
 
 unique_stmt
   = k:unique_keyword sep v:unique_arg_str stmtend {
@@ -1029,13 +1045,15 @@ unique_arg_str
   / unique_arg
 
 unique_arg
-  = descendant_schema_nodeid (sep descendant_schema_nodeid)*
+  = h:descendant_schema_nodeid t:(sep descendant_schema_nodeid)* {
+    return buildList(h, t, 1);
+  }
 
 choice_stmt
-  = k:choice_keyword sep i:identifier_arg_str optsep s:choice_stmt_subs {
+  = k:choice_keyword sep n:identifier_arg_str optsep s:choice_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1071,10 +1089,10 @@ short_case_stmt
   / anyxml_stmt
 
 case_stmt
-  = k:case_keyword sep i:identifier_arg_str optsep s:case_stmt_subs {
+  = k:case_keyword sep n:identifier_arg_str optsep s:case_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1099,10 +1117,10 @@ case_stmt_sub_
   / data_def_stmt
 
 anyxml_stmt
-  = k:anyxml_keyword sep i:identifier_arg_str optsep s:anyxml_stmt_subs {
+  = k:anyxml_keyword sep n:identifier_arg_str optsep s:anyxml_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1129,10 +1147,10 @@ anyxml_stmt_sub_
   / reference_stmt
 
 uses_stmt
-  = k:uses_keyword sep i:identifier_ref_arg_str optsep s:uses_stmt_subs {
+  = k:uses_keyword sep n:identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1158,10 +1176,10 @@ uses_stmt_sub_
   / uses_augment_stmt
 
 refine_stmt
-  = k:refine_keyword sep i:refine_arg_str optsep s:refine_stmt_subs {
+  = k:refine_keyword sep n:refine_arg_str optsep s:refine_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1286,10 +1304,10 @@ refine_anyxml_stmt_
   / reference_stmt
 
 uses_augment_stmt
-  = k:augment_keyword sep i:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
+  = k:augment_keyword sep n:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1319,10 +1337,10 @@ uses_augment_arg
   = descendant_schema_nodeid
 
 augment_stmt
-  = k:augment_keyword sep i:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
+  = k:augment_keyword sep n:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1376,10 +1394,10 @@ when_stmt_sub_
   / reference_stmt
 
 rpc_stmt
-  = k:rpc_keyword sep i:identifier_arg_str optsep s:rpc_stmt_subs {
+  = k:rpc_keyword sep n:identifier_arg_str optsep s:rpc_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1446,10 +1464,10 @@ output_stmt_sub_
   / data_def_stmt
 
 notification_stmt
-  = k:notification_keyword sep i:identifier_arg_str optsep s:notification_stmt_subs {
+  = k:notification_keyword sep n:identifier_arg_str optsep s:notification_stmt_subs {
     return {
 	  type:k,
-	  id:i,
+	  name:n,
 	  subs:s
 	};
   }
@@ -1668,7 +1686,9 @@ descendant_schema_nodeid
   = node_identifier (absolute_schema_nodeid)?
 
 node_identifier
-  = (prefix ":")? identifier
+  = p:(prefix ":")? i:identifier {
+    return [extractOptional(p, 0)].concat(i);
+  }
 
 // Instance Identifiers
 
@@ -1909,7 +1929,9 @@ identifier_ref_arg_str
   / identifier_ref_arg
 
 identifier_ref_arg
-  = (prefix ":")? identifier
+  = p:(prefix ":")? i:identifier {
+    return [extractOptional(p, 0)].concat(i);
+  }
 
 integer_value
   = "-" non_negative_integer_value
