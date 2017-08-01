@@ -133,7 +133,7 @@ yang_version_stmt
   = k:yang_version_keyword sep v:yang_version_arg_str optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  version:v
 	};
   }
 
@@ -206,7 +206,7 @@ organization_stmt
   = k:organization_keyword sep v:string optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -214,7 +214,7 @@ contact_stmt
   = k:contact_keyword sep v:string optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -222,7 +222,7 @@ description_stmt
   = k:description_keyword sep v:string optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -230,7 +230,7 @@ reference_stmt
   = k:reference_keyword sep v:string optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -238,7 +238,7 @@ units_stmt
   = k:units_keyword sep v:string optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -295,7 +295,7 @@ extension_stmt_subs
 // CHANGE don't check repetition count
 extension_stmt_subs_
   = l:(extension_stmt_sub_ stmtsep)* {
-    extractList(l, 0);
+    return extractList(l, 0);
   }
 
 extension_stmt_sub_
@@ -324,7 +324,7 @@ yin_element_stmt
   = k:yin_element_keyword sep v:yin_element_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  element:v
 	};
   }
 
@@ -367,7 +367,7 @@ base_stmt
   = k:base_keyword sep v:identifier_ref_arg_str optsep stmtend {
     return {
 	  type:k,
-	  value:v
+	  name:v
 	};
   }
 
@@ -468,7 +468,7 @@ range_stmt
   = k:range_keyword sep v:range_arg_str optsep s:range_stmt_subs {
     return {
 	  type:k,
-	  value:v,
+	  range:v,
 	  subs:s
 	};
   }
@@ -492,10 +492,15 @@ range_stmt_sub_
 
 // these stmts can appear in any order
 decimal64_specification
-  = fraction_digits_stmt (range_stmt stmtsep)?
+  = fraction_digits_stmt stmtsep
 
 fraction_digits_stmt
-  = fraction_digits_keyword sep fraction_digits_arg_str stmtend
+  = k:fraction_digits_keyword sep v:fraction_digits_arg_str stmtend {
+      return {
+	      type:k,
+		  value:v
+	  };
+  }
 
 fraction_digits_arg_str
   = DQUOTE v:fraction_digits_arg DQUOTE { return v; }
@@ -549,7 +554,7 @@ pattern_stmt
   = k:pattern_keyword sep n:string optsep s:pattern_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  pattern:n,
 	  subs:s
 	};
   }
@@ -575,7 +580,7 @@ default_stmt
   = k:default_keyword sep v:string stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -588,7 +593,7 @@ enum_stmt
   = k:enum_keyword sep v:string optsep s:enum_stmt_subs {
     return {
 	  type:k,
-	  value:v,
+	  text:v,
 	  subs:s
 	};
   }
@@ -617,7 +622,7 @@ path_stmt
   = k:path_keyword sep v:path_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  path:v
 	};
   }
 
@@ -625,7 +630,7 @@ require_instance_stmt
   = k:require_instance_keyword sep v:require_instance_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  require:v
 	};
   }
 
@@ -685,7 +690,7 @@ position_stmt
   = k:position_keyword sep v:position_value_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  position:v
 	};
   }
 
@@ -701,7 +706,7 @@ status_stmt
   = k:status_keyword sep v:status_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  status:v
 	};
   }
 
@@ -719,7 +724,7 @@ config_stmt
   = k:config_keyword sep v:config_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  config:v
 	};
   }
 
@@ -736,7 +741,7 @@ mandatory_stmt
   = k:mandatory_keyword sep v:mandatory_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  mandatory:v
 	};
   }
 
@@ -753,7 +758,7 @@ presence_stmt
   = k:presence_keyword sep v:string stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -773,7 +778,7 @@ must_stmt
   = k:must_keyword sep v:string optsep s:must_stmt_subs {
     return {
 	  type:k,
-	  value:v,
+	  text:v,
 	  subs:s
 	};
   }
@@ -799,7 +804,7 @@ error_message_stmt
   = k:error_message_keyword sep v:string stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -807,7 +812,7 @@ error_app_tag_stmt
   = k:error_app_tag_keyword sep v:string stmtend {
     return {
 	  type:k,
-	  value:v
+	  text:v
 	};
   }
 
@@ -848,7 +853,7 @@ value_stmt
   = k:value_keyword sep v:integer_value_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  integer:v
 	};
   }
 
@@ -1017,7 +1022,7 @@ key_stmt
   = k:key_keyword sep v:key_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  key:v
 	};
   }
 
@@ -1035,7 +1040,7 @@ unique_stmt
   = k:unique_keyword sep v:unique_arg_str stmtend {
     return {
 	  type:k,
-	  value:v
+	  unique:v
 	};
   }
 
@@ -1373,7 +1378,7 @@ when_stmt
   = k:when_keyword sep v:string optsep s:when_stmt_subs {
     return {
 	  type:k,
-	  value:v,
+	  text:v,
 	  subs:s
 	};
   }
@@ -1496,7 +1501,7 @@ deviation_stmt
   = k:deviation_keyword sep v:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
     return {
 	  type:k,
-	  value:v,
+	  deviation:v,
 	  subs:s
 	};
   }
@@ -1529,7 +1534,7 @@ deviate_not_supported_stmt
   = k:deviate_keyword sep v:not_supported_keyword optsep (";" / "{" stmtsep "}") {
     return {
 	  type:k,
-	  value:v
+	  sub_type:v
 	};
   }
 
@@ -1687,7 +1692,10 @@ descendant_schema_nodeid
 
 node_identifier
   = p:(prefix ":")? i:identifier {
-    return [extractOptional(p, 0)].concat(i);
+    return { 
+	    prefix:extractOptional(p, 0),
+	    name:i
+	};
   }
 
 // Instance Identifiers
@@ -1930,7 +1938,10 @@ identifier_ref_arg_str
 
 identifier_ref_arg
   = p:(prefix ":")? i:identifier {
-    return [extractOptional(p, 0)].concat(i);
+    return { 
+	    prefix:extractOptional(p, 0),
+	    name:i
+	};
   }
 
 integer_value
