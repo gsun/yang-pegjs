@@ -439,7 +439,7 @@ type_stmt
   }
 
 type_body_stmts 
-  = ";" { return []; }
+  = ";" { return null; }
   / "{" stmtsep s:type_body_stmts_ "}" { return s; }
   
 // CHANGE add empty body alternative
@@ -492,7 +492,7 @@ range_stmt_sub_
 
 // these stmts can appear in any order
 decimal64_specification
-  = fraction_digits_stmt stmtsep
+  = f:fraction_digits_stmt stmtsep { return f; }
 
 fraction_digits_stmt
   = k:fraction_digits_keyword sep v:fraction_digits_arg_str stmtend {
