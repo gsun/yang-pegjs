@@ -616,7 +616,7 @@ enum_stmt_sub_
   / reference_stmt
 
 leafref_specification
-  = path_stmt
+  = p:path_stmt stmtsep { return p; }
 
 path_stmt
   = k:path_keyword sep v:path_arg_str stmtend {
@@ -1721,8 +1721,8 @@ path_arg_str
   / path_arg
 
 path_arg
-  = absolute_path
-  / relative_path
+  = $absolute_path
+  / $relative_path
 
 absolute_path
   = ("/" (node_identifier path_predicate*))+
@@ -2111,7 +2111,7 @@ unreserved
 
 /* http://tools.ietf.org/html/rfc3986#section-3 Syntax Components */
 URI
-  = scheme ":" hier_part ("?" query)? ("#" fragment)?
+  = scheme ":" hier_part ("?" query)? ("#" fragment)? { return text(); }
 
 hier_part
   = "//" authority path_abempty
