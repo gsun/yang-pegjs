@@ -181,9 +181,9 @@ namespace_stmt
   }
 
 uri_str
-  = DQUOTE u:URI DQUOTE { return u; }
-  / SQUOTE u:URI SQUOTE { return u; }
-  / URI
+  = DQUOTE u:uri DQUOTE { return u; }
+  / SQUOTE u:uri SQUOTE { return u; }
+  / uri
 
 prefix_stmt
   = k:prefix_keyword sep p:prefix_arg_str optsep stmtend {
@@ -1681,14 +1681,28 @@ date_arg
 // Schema Node Identifiers
 
 schema_nodeid
-  = absolute_schema_nodeid
-  / descendant_schema_nodeid
+  = a:absolute_schema_nodeid {
+    return {
+	    type:absolute_node,
+		list:a
+	};
+  }
+  / d:descendant_schema_nodeid {
+    return {
+	    type:descendant_node,
+		list:d
+	};
+  }
 
 absolute_schema_nodeid
-  = ("/" node_identifier)+
+  = n:("/" node_identifier)+ {
+    return extractList(n, 1);
+  }
 
 descendant_schema_nodeid
-  = node_identifier (absolute_schema_nodeid)?
+  = n:node_identifier a:(absolute_schema_nodeid)? {
+    return [n].concat(extractOptional(a, 0));
+  }
 
 node_identifier
   = p:(prefix ":")? i:identifier {
@@ -2110,7 +2124,7 @@ unreserved
 
 
 /* http://tools.ietf.org/html/rfc3986#section-3 Syntax Components */
-URI
+uri
   = scheme ":" hier_part ("?" query)? ("#" fragment)? { return text(); }
 
 hier_part
@@ -2260,8 +2274,8 @@ fragment
 
 
 /* http://tools.ietf.org/html/rfc3986#section-4.1 URI Reference */
-URI_reference
-  = URI
+uri_reference
+  = uri
   / relative_ref
 
 
@@ -2277,7 +2291,7 @@ relative_part
 
 
 /* http://tools.ietf.org/html/rfc3986#section-4.3 Absolute URI */
-absolute_URI
+absolute_uri
   = scheme ":" hier_part ("?" query)?
 
 /* ietf/rfc5234-core-abnf.pegjs */
