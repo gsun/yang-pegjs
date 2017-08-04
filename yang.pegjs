@@ -1683,13 +1683,13 @@ date_arg
 schema_nodeid
   = a:absolute_schema_nodeid {
     return {
-	    type:absolute_node,
+	    type:"absolute_node",
 		list:a
 	};
   }
   / d:descendant_schema_nodeid {
     return {
-	    type:descendant_node,
+	    type:"descendant_node",
 		list:d
 	};
   }
@@ -1998,12 +1998,43 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_statement
-  = (prefix ":") identifier (sep string)? optsep (";" / "{" stmtsep_no_stmt_ (unknown_statement2 stmtsep_no_stmt_)* "}") optsep
+  = p:prefix ":" i:identifier s:(sep string)? optsep ";" optsep {
+    return {
+	    type:"unknown",
+	    prefix:p,
+		id:i,
+		param:extractOptional(s, 1),
+		subs:null
+	};
+  }
+  / p:prefix ":" i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_statement2 stmtsep_no_stmt_)* "}" optsep {
+    return {
+	    type:"unknown",
+	    prefix:p,
+		id:i,
+		param:extractOptional(s, 1),
+		subs:extractList(sub, 0)
+	};
+  }
 
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 unknown_statement2
-  = (prefix ":")? identifier (sep string)? optsep (";" / "{" stmtsep_no_stmt_ (unknown_statement2 stmtsep_no_stmt_)* "}") optsep
+  = p:(prefix ":")? i:identifier s:(sep string)? optsep ";" optsep {
+    return {
+	    prefix:extractOptional(p, 0),
+		id:i,
+		param:extractOptional(s, 1)
+	};
+  }
+  / p:(prefix ":")? i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_statement2 stmtsep_no_stmt_)* "}" optsep {
+    return {
+	    prefix:extractOptional(p, 0),
+		id:i,
+		param:extractOptional(s, 1),
+		subs:extractList(sub, 0)
+	};
+  }
 
 prefix
   = identifier
