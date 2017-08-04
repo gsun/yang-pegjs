@@ -62,6 +62,7 @@ module_header_stmt_
   = yang_version_stmt
   / namespace_stmt
   / prefix_stmt
+  / unknown_stmt
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
@@ -73,6 +74,7 @@ submodule_header_stmts
 submodule_header_stmt_
   = yang_version_stmt
   / belongs_to_stmt
+  / unknown_stmt
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
@@ -86,6 +88,7 @@ meta_stmt_
   / contact_stmt
   / description_stmt
   / reference_stmt
+  / unknown_stmt
 
 // these stmts can appear in any order
 // CHANGE don't check repetition count
@@ -97,6 +100,7 @@ linkage_stmts
 linkage_stmt_
   = import_stmt
   / include_stmt
+  / unknown_stmt
 
 revision_stmts
   = l:(revision_stmt stmtsep)* {
@@ -119,6 +123,7 @@ body_stmt_
   / rpc_stmt
   / notification_stmt
   / deviation_stmt
+  / unknown_stmt
 
 data_def_stmt
   = container_stmt
@@ -128,6 +133,7 @@ data_def_stmt
   / choice_stmt
   / anyxml_stmt
   / uses_stmt
+  / unknown_stmt
 
 yang_version_stmt
   = k:yang_version_keyword sep v:yang_version_arg_str optsep stmtend {
@@ -266,6 +272,7 @@ revision_stmt_subs_
 revision_stmt_sub_
   = description_stmt
   / reference_stmt
+  / unknown_stmt
 
 revision_date
   = date_arg_str
@@ -303,6 +310,7 @@ extension_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
+  / unknown_stmt
 
 argument_stmt
   = k:argument_keyword sep n:identifier_arg_str optsep ";" {
@@ -362,7 +370,8 @@ identity_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 base_stmt
   = k:base_keyword sep v:identifier_ref_arg_str optsep stmtend {
     return {
@@ -396,7 +405,8 @@ feature_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 if_feature_stmt
   = k:if_feature_keyword sep n:identifier_ref_arg_str optsep stmtend {
     return {
@@ -428,7 +438,8 @@ typedef_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 type_stmt
   = k:type_keyword sep n:identifier_ref_arg_str optsep b:type_body_stmts {
     return {
@@ -455,8 +466,9 @@ type_body_stmts_
   / bits_specification
   / union_specification
   / binary_specification
-  / stmtsep
-
+  / unknown_stmt
+  / stmtsep  
+  
 // CHANGE required
 binary_specification
   = l:length_stmt stmtsep { return l; }
@@ -489,7 +501,8 @@ range_stmt_sub_
   / error_app_tag_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 decimal64_specification
   = f:fraction_digits_stmt stmtsep { return f; }
@@ -523,7 +536,8 @@ string_restrictions
 string_restriction_
   = length_stmt
   / pattern_stmt
-
+  / unknown_stmt
+  
 length_stmt
   = k:length_keyword sep n:length_arg_str optsep s:length_stmt_subs {
     return {
@@ -549,7 +563,8 @@ length_stmt_sub_
   / error_app_tag_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 pattern_stmt
   = k:pattern_keyword sep n:string optsep s:pattern_stmt_subs {
     return {
@@ -575,7 +590,8 @@ pattern_stmt_sub_
   / error_app_tag_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 default_stmt
   = k:default_keyword sep v:string stmtend {
     return {
@@ -614,7 +630,8 @@ enum_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 leafref_specification
   = p:path_stmt stmtsep { return p; }
 
@@ -685,7 +702,8 @@ bit_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 position_stmt
   = k:position_keyword sep v:position_value_arg_str stmtend {
     return {
@@ -799,7 +817,8 @@ must_stmt_sub_
   / error_app_tag_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 error_message_stmt
   = k:error_message_keyword sep v:string stmtend {
     return {
@@ -892,7 +911,8 @@ grouping_stmt_sub_
   / typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 container_stmt
   = k:container_keyword sep n:identifier_arg_str optsep s:container_stmt_subs {
     return {
@@ -925,7 +945,8 @@ container_stmt_sub_
   / typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 leaf_stmt
   = k:leaf_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
     return {
@@ -954,7 +975,8 @@ leaf_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 leaf_list_stmt
   = k:leaf_list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
     return {
@@ -984,7 +1006,8 @@ leaf_list_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 list_stmt
   = k:list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
     return {
@@ -1017,7 +1040,8 @@ list_stmt_sub_
   / typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 key_stmt
   = k:key_keyword sep v:key_arg_str stmtend {
     return {
@@ -1085,14 +1109,16 @@ choice_stmt_sub_
   / reference_stmt
   / short_case_stmt
   / case_stmt
-
+  / unknown_stmt
+  
 short_case_stmt
   = container_stmt
   / leaf_stmt
   / leaf_list_stmt
   / list_stmt
   / anyxml_stmt
-
+  / unknown_stmt
+  
 case_stmt
   = k:case_keyword sep n:identifier_arg_str optsep s:case_stmt_subs {
     return {
@@ -1120,7 +1146,8 @@ case_stmt_sub_
   / description_stmt
   / reference_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 anyxml_stmt
   = k:anyxml_keyword sep n:identifier_arg_str optsep s:anyxml_stmt_subs {
     return {
@@ -1150,7 +1177,8 @@ anyxml_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 uses_stmt
   = k:uses_keyword sep n:identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
@@ -1179,7 +1207,8 @@ uses_stmt_sub_
   / reference_stmt
   / refine_stmt
   / uses_augment_stmt
-
+  / unknown_stmt
+  
 refine_stmt
   = k:refine_keyword sep n:refine_arg_str optsep s:refine_stmt_subs {
     return {
@@ -1201,7 +1230,8 @@ refine_stmt_subs_
   / refine_choice_stmts
   / refine_case_stmts
   / refine_anyxml_stmts
-
+  / unknown_stmt
+  
 refine_arg_str
   = DQUOTE v:refine_arg DQUOTE { return v; }
   / SQUOTE v:refine_arg SQUOTE { return v; }
@@ -1223,7 +1253,8 @@ refine_container_stmt_
   / config_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_leaf_stmts
@@ -1238,7 +1269,8 @@ refine_leaf_stmt_
   / mandatory_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_leaf_list_stmts
@@ -1253,7 +1285,8 @@ refine_leaf_list_stmt_
   / max_elements_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_list_stmts
@@ -1268,7 +1301,8 @@ refine_list_stmt_
   / max_elements_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_choice_stmts
@@ -1282,7 +1316,8 @@ refine_choice_stmt_
   / mandatory_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_case_stmts
@@ -1293,7 +1328,8 @@ refine_case_stmts
 refine_case_stmt_
   = description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 // these stmts can appear in any order
 // CHANGE don't check repetition count
 refine_anyxml_stmts
@@ -1307,7 +1343,8 @@ refine_anyxml_stmt_
   / mandatory_stmt
   / description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 uses_augment_stmt
   = k:augment_keyword sep n:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
     return {
@@ -1332,7 +1369,8 @@ uses_augment_stmt_sub_
   / reference_stmt
   / data_def_stmt
   / case_stmt
-
+  / unknown_stmt
+  
 uses_augment_arg_str
   = DQUOTE v:uses_augment_arg DQUOTE { return v; }
   / SQUOTE v:uses_augment_arg SQUOTE { return v; }
@@ -1365,7 +1403,8 @@ augment_stmt_sub_
   / reference_stmt
   / data_def_stmt
   / case_stmt
-
+  / unknown_stmt
+  
 augment_arg_str
   = DQUOTE v:augment_arg DQUOTE { return v; }
   / SQUOTE v:augment_arg SQUOTE { return v; }
@@ -1397,7 +1436,8 @@ when_stmt_subs_
 when_stmt_sub_
   = description_stmt
   / reference_stmt
-
+  / unknown_stmt
+  
 rpc_stmt
   = k:rpc_keyword sep n:identifier_arg_str optsep s:rpc_stmt_subs {
     return {
@@ -1427,7 +1467,8 @@ rpc_stmt_sub_
   / grouping_stmt
   / input_stmt
   / output_stmt
-
+  / unknown_stmt
+  
 input_stmt
   = k:input_keyword optsep "{" stmtsep s:input_stmt_subs_ "}" {
     return {
@@ -1447,7 +1488,8 @@ input_stmt_sub_
   = typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 output_stmt
   = k:output_keyword optsep "{" stmtsep s:output_stmt_subs_ "}" {
     return {
@@ -1467,7 +1509,8 @@ output_stmt_sub_
   = typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 notification_stmt
   = k:notification_keyword sep n:identifier_arg_str optsep s:notification_stmt_subs {
     return {
@@ -1496,7 +1539,8 @@ notification_stmt_sub_
   / typedef_stmt
   / grouping_stmt
   / data_def_stmt
-
+  / unknown_stmt
+  
 deviation_stmt
   = k:deviation_keyword sep v:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
     return {
@@ -1521,7 +1565,8 @@ deviation_stmt_sub_
   / deviate_add_stmt
   / deviate_replace_stmt
   / deviate_delete_stmt
-
+  / unknown_stmt
+  
 deviation_arg_str
   = DQUOTE v:deviation_arg DQUOTE { return v; }
   / SQUOTE v:deviation_arg SQUOTE { return v; }
@@ -1567,7 +1612,8 @@ deviate_add_stmt_sub_
   / mandatory_stmt
   / min_elements_stmt
   / max_elements_stmt
-
+  / unknown_stmt
+  
 deviate_delete_stmt
   = k:deviate_keyword sep sk:delete_keyword optsep s:deviate_delete_stmt_subs {
     return {
@@ -1593,7 +1639,8 @@ deviate_delete_stmt_sub_
   / must_stmt
   / unique_stmt
   / default_stmt
-
+  / unknown_stmt
+  
 deviate_replace_stmt
   = k:deviate_keyword sep sk:replace_keyword optsep s:deviate_replace_stmt_subs {
     return {
@@ -1622,7 +1669,8 @@ deviate_replace_stmt_sub_
   / mandatory_stmt
   / min_elements_stmt
   / max_elements_stmt
-
+  / unknown_stmt
+  
 // Ranges
 
 range_arg_str
@@ -1974,7 +2022,7 @@ zero_integer_value
 
 stmtend
   = ";"
-  / "{" unknown_statement* "}"
+  / "{" unknown_stmt* "}"
 
 non_zero_digit
   = [1-9]
@@ -1997,21 +2045,21 @@ decimal_value
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
-unknown_statement
+unknown_stmt
   = p:prefix ":" i:identifier s:(sep string)? optsep ";" optsep {
     return {
 	    type:"unknown",
 	    prefix:p,
-		id:i,
+		name:i,
 		param:extractOptional(s, 1),
 		subs:null
 	};
   }
-  / p:prefix ":" i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_statement2 stmtsep_no_stmt_)* "}" optsep {
+  / p:prefix ":" i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" optsep {
     return {
 	    type:"unknown",
 	    prefix:p,
-		id:i,
+		name:i,
 		param:extractOptional(s, 1),
 		subs:extractList(sub, 0)
 	};
@@ -2019,7 +2067,7 @@ unknown_statement
 
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
-unknown_statement2
+unknown_stmt2
   = p:(prefix ":")? i:identifier s:(sep string)? optsep ";" optsep {
     return {
 	    prefix:extractOptional(p, 0),
@@ -2027,7 +2075,7 @@ unknown_statement2
 		param:extractOptional(s, 1)
 	};
   }
-  / p:(prefix ":")? i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_statement2 stmtsep_no_stmt_)* "}" optsep {
+  / p:(prefix ":")? i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" optsep {
     return {
 	    prefix:extractOptional(p, 0),
 		id:i,
@@ -2076,7 +2124,8 @@ optsep
 // CHANGE DRY optsep
 // CHANGE allow comments
 stmtsep
-  = optsep (comment_ / unknown_statement)*
+  = stmtsep_no_stmt_
+//  = optsep (comment_ / unknown_stmt)*
 
 stmtsep_no_stmt_
   = optsep comment_*
