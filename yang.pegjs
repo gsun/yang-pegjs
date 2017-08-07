@@ -26,6 +26,10 @@
   }
 }
 
+start_rule
+ =  module_stmt
+ /  submodule_stmt
+ 
 module_stmt
   = optsep k:module_keyword sep n:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
@@ -2021,7 +2025,7 @@ string_unquoted_
 
 // unconditional separator
 sep
-  = $(WSP / line_break)+
+  = $(WSP / line_break / comment_)+
 
 // CHANGE accept comments as well
 optsep
