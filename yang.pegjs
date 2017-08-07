@@ -456,6 +456,11 @@ type_body_stmts
 // CHANGE add empty body alternative
 // CHANGE to counteract making all *_restrictions/*_specification rule required
 type_body_stmts_
+  = l:(type_body_stmt_ stmtsep)* {
+    return extractList(l, 0);
+  }
+  
+type_body_stmt_
   = numerical_restrictions
   / decimal64_specification
   / string_restrictions
@@ -467,7 +472,6 @@ type_body_stmts_
   / union_specification
   / binary_specification
   / unknown_stmt
-  / stmtsep  
   
 // CHANGE required
 binary_specification
@@ -1223,14 +1227,9 @@ refine_stmt_subs
   / "{" stmtsep s:refine_stmt_subs_ "}" { return s; }
   
 refine_stmt_subs_
-  = refine_container_stmts
-  / refine_leaf_stmts
-  / refine_leaf_list_stmts
-  / refine_list_stmts
-  / refine_choice_stmts
-  / refine_case_stmts
-  / refine_anyxml_stmts
-  / unknown_stmt
+  = l:(refine_stmt_sub_ stmtsep)* {
+    return extractList(l, 0);
+  }
   
 refine_arg_str
   = DQUOTE v:refine_arg DQUOTE { return v; }
@@ -1240,109 +1239,16 @@ refine_arg_str
 refine_arg
   = descendant_schema_nodeid
 
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_container_stmts
-  = l:(refine_container_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_container_stmt_
+refine_stmt_sub_
   = must_stmt
+  / default_stmt
   / presence_stmt
   / config_stmt
   / description_stmt
   / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_leaf_stmts
-  = l:(refine_leaf_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_leaf_stmt_
-  = must_stmt
-  / default_stmt
-  / config_stmt
   / mandatory_stmt
-  / description_stmt
-  / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_leaf_list_stmts
-  = l:(refine_leaf_list_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_leaf_list_stmt_
-  = must_stmt
-  / config_stmt
   / min_elements_stmt
   / max_elements_stmt
-  / description_stmt
-  / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_list_stmts
-  = l:(refine_list_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_list_stmt_
-  = must_stmt
-  / config_stmt
-  / min_elements_stmt
-  / max_elements_stmt
-  / description_stmt
-  / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_choice_stmts
-  = l:(refine_choice_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_choice_stmt_
-  = default_stmt
-  / config_stmt
-  / mandatory_stmt
-  / description_stmt
-  / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_case_stmts
-  = l:(refine_case_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_case_stmt_
-  = description_stmt
-  / reference_stmt
-  / unknown_stmt
-  
-// these stmts can appear in any order
-// CHANGE don't check repetition count
-refine_anyxml_stmts
-  = l:(refine_anyxml_stmt_ stmtsep)* {
-    return extractList(l, 0);
-  }
-
-refine_anyxml_stmt_
-  = must_stmt
-  / config_stmt
-  / mandatory_stmt
-  / description_stmt
-  / reference_stmt
   / unknown_stmt
   
 uses_augment_stmt
