@@ -550,7 +550,7 @@ length_stmt
   = k:length_keyword sep n:length_arg_str optsep s:length_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  value:n,
 	  subs:s
 	};
   }
@@ -1601,7 +1601,7 @@ range_part
 range_boundary
   = min_keyword
   / max_keyword
-  / decimal_value
+  / $decimal_value
 
 // Lengths
 
