@@ -1432,7 +1432,7 @@ notification_stmt
 
 notification_stmt_subs
   = ";" { return []; }
-  / "{" stmtsep s:notification_stmt_subs "}" { return s; }
+  / "{" stmtsep s:notification_stmt_subs_ "}" { return s; }
   
 // these stmts can appear in any order
 // CHANGE don't check repetition count
@@ -1601,7 +1601,6 @@ range_part
 range_boundary
   = min_keyword
   / max_keyword
-  / integer_value
   / decimal_value
 
 // Lengths
@@ -1938,7 +1937,7 @@ non_zero_digit
   = [1-9]
 
 decimal_value
-  = integer_value ("." zero_integer_value)
+  = integer_value ("." zero_integer_value)?
 
 /* rfc6020-yang-generic.pegjs */
 /*
