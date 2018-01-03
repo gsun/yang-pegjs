@@ -535,8 +535,8 @@ fraction_digits_arg
 // CHANGE required
 // CHANGE don't check repetition count
 string_restrictions
-  = l:(string_restriction_ stmtsep)+ {
-    return extractList(l, 0);
+  = l:string_restriction_ stmtsep {
+    return l;
   }
 
 string_restriction_
@@ -607,8 +607,8 @@ default_stmt
   }
 
 enum_specification
-  = l:(enum_stmt stmtsep)+ {
-    return extractList(l, 0);
+  = l:enum_stmt stmtsep {
+    return l;
   }
 
 enum_stmt
@@ -674,13 +674,13 @@ identityref_specification
   = b:base_stmt stmtsep { return b; }
 
 union_specification
-  = l:(type_stmt stmtsep)+ {
-    return extractList(l, 0);
+  = l:type_stmt stmtsep {
+    return l;
   }
 
 bits_specification
-  = l:(bit_stmt stmtsep)+ {
-    return extractList(l, 0);
+  = l:bit_stmt stmtsep {
+    return l;
   }
 
 bit_stmt
