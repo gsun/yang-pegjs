@@ -167,21 +167,20 @@ import_stmt
 }
 
 include_stmt
-  = k:include_keyword sep n:identifier_arg_str optsep ";" { 
+  = k:include_keyword sep n:identifier_arg_str optsep s:include_stmt_subs { 
       return {
 	  type:k,
 	  name:n,
-	  revision_date:null
+	  subs:s
 	};
   } 
-  / k:include_keyword sep n:identifier_arg_str optsep "{" stmtsep d:(revision_date_stmt stmtsep)? "}" {
-    return {
-	  type:k,
-	  name:n,
-	  revision_date:extractOptional(d, 0)
-	};
-  }
 
+include_stmt_subs 
+  = ";" { return []; }
+  / "{" stmtsep d:(revision_date_stmt stmtsep)? "}" {
+    return [extractOptional(d, 0)];
+  }
+  
 namespace_stmt
   = k:namespace_keyword sep u:uri_str optsep stmtend {
     return {
@@ -317,21 +316,20 @@ extension_stmt_sub_
   / unknown_stmt
 
 argument_stmt
-  = k:argument_keyword sep n:identifier_arg_str optsep ";" {
+  = k:argument_keyword sep n:identifier_arg_str optsep s:argument_stmt_subs {
     return {
 	  type:k,
 	  name:n,
-	  yin:null
+	  subs:s
 	};
   } 
-  / k:argument_keyword sep n:identifier_arg_str optsep "{" stmtsep y:(yin_element_stmt stmtsep)? "}" {
-    return {
-	  type:k,
-	  name:n,
-	  yin:extractOptional(y, 0)
-	};
-  }
 
+argument_stmt_subs
+ = ";" { return [];}
+ / "{" stmtsep y:(yin_element_stmt stmtsep)? "}" {
+    return [extractOptional(y, 0)];
+ }
+ 
 yin_element_stmt
   = k:yin_element_keyword sep v:yin_element_arg_str stmtend {
     return {
@@ -445,16 +443,16 @@ typedef_stmt_sub_
   / unknown_stmt
   
 type_stmt
-  = k:type_keyword sep n:identifier_ref_arg_str optsep b:type_body_stmts {
+  = k:type_keyword sep n:identifier_ref_arg_str optsep s:type_body_stmts {
     return {
 	  type:k,
 	  name:n,
-	  body:b
+	  subs:s
 	};
   }
 
 type_body_stmts 
-  = ";" { return null; }
+  = ";" { return []; }
   / "{" stmtsep s:type_body_stmts_ "}" { return s; }
   
 // CHANGE add empty body alternative
@@ -789,7 +787,12 @@ presence_stmt
   }
 
 ordered_by_stmt
-  = ordered_by_keyword sep ordered_by_arg_str stmtend
+  = k:ordered_by_keyword sep v:ordered_by_arg_str stmtend {
+    return {
+	  type:k,
+	  order:v
+	};
+  }
 
 ordered_by_arg_str
   = DQUOTE v:ordered_by_arg DQUOTE { return v; }
@@ -1720,135 +1723,135 @@ rel_path_keyexpr
 
 // statement keywords
 anyxml_keyword
-  = "anyxml"
+  = "anyxml" { return "anyxml_keyword"; }
 argument_keyword
-  = "argument"
+  = "argument" { return "argument_keyword"; }
 augment_keyword
-  = "augment"
+  = "augment" { return "augment_keyword"; }
 base_keyword
-  = "base"
+  = "base" { return "base_keyword"; }
 belongs_to_keyword
-  = "belongs-to"
+  = "belongs-to" { return "belongs_to_keyword"; }
 bit_keyword
-  = "bit"
+  = "bit" { return "bit_keyword"; }
 case_keyword
-  = "case"
+  = "case" { return "case_keyword"; }
 choice_keyword
-  = "choice"
+  = "choice" { return "choice_keyword"; }
 config_keyword
-  = "config"
+  = "config" { return "config_keyword"; }
 contact_keyword
-  = "contact"
+  = "contact" { return "contact_keyword"; }
 container_keyword
-  = "container"
+  = "container" { return "container_keyword"; }
 default_keyword
-  = "default"
+  = "default" { return "default_keyword"; }
 description_keyword
-  = "description"
+  = "description" { return "description_keyword"; }
 enum_keyword
-  = "enum"
+  = "enum" { return "enum_keyword"; }
 error_app_tag_keyword
-  = "error-app-tag"
+  = "error-app-tag" { return "error_app_tag_keyword"; }
 error_message_keyword
-  = "error-message"
+  = "error-message" { return "error_message_keyword"; }
 extension_keyword
-  = "extension"
+  = "extension" { return "extension_keyword"; }
 deviation_keyword
-  = "deviation"
+  = "deviation" { return "deviation_keyword"; }
 deviate_keyword
-  = "deviate"
+  = "deviate" { return "deviate_keyword"; }
 feature_keyword
-  = "feature"
+  = "feature" { return "feature_keyword"; }
 fraction_digits_keyword
-  = "fraction-digits"
+  = "fraction-digits" { return "fraction_digits_keyword"; }
 grouping_keyword
-  = "grouping"
+  = "grouping" { return "grouping_keyword"; }
 identity_keyword
-  = "identity"
+  = "identity" { return "identity_keyword"; }
 if_feature_keyword
-  = "if-feature"
+  = "if-feature" { return "if_feature_keyword"; }
 import_keyword
-  = "import"
+  = "import" { return "import_keyword"; }
 include_keyword
-  = "include"
+  = "include" { return "include_keyword"; }
 input_keyword
-  = "input"
+  = "input" { return "input_keyword"; }
 key_keyword
-  = "key"
+  = "key" { return "key_keyword"; }
 leaf_keyword
-  = "leaf"
+  = "leaf" { return "leaf_keyword"; }
 leaf_list_keyword
-  = "leaf-list"
+  = "leaf-list" { return "leaf_list_keyword"; }
 length_keyword
-  = "length"
+  = "length" { return "length_keyword"; }
 list_keyword
-  = "list"
+  = "list" { return "list_keyword"; }
 mandatory_keyword
-  = "mandatory"
+  = "mandatory" { return "mandatory_keyword"; }
 max_elements_keyword
-  = "max-elements"
+  = "max-elements" { return "max_elements_keyword"; }
 min_elements_keyword
-  = "min-elements"
+  = "min-elements"  { return "min_elements_keyword"; }
 module_keyword
-  = "module"
+  = "module" { return "module_keyword"; }
 must_keyword
-  = "must"
+  = "must" { return "must_keyword"; }
 namespace_keyword
-  = "namespace"
+  = "namespace" { return "namespace_keyword"; }
 notification_keyword
-  = "notification"
+  = "notification" { return "notification_keyword"; }
 ordered_by_keyword
-  = "ordered-by"
+  = "ordered-by" { return "ordered_by_keyword"; }
 organization_keyword
-  = "organization"
+  = "organization" { return "organization_keyword"; }
 output_keyword
-  = "output"
+  = "output" { return "output_keyword"; }
 path_keyword
-  = "path"
+  = "path" { return "path_keyword"; }
 pattern_keyword
-  = "pattern"
+  = "pattern" { return "pattern_keyword"; }
 position_keyword
-  = "position"
+  = "position" { return "position_keyword"; }
 prefix_keyword
-  = "prefix"
+  = "prefix" { return "prefix_keyword"; }
 presence_keyword
-  = "presence"
+  = "presence" { return "presence_keyword"; }
 range_keyword
-  = "range"
+  = "range" { return "range_keyword"; }
 reference_keyword
-  = "reference"
+  = "reference" { return "reference_keyword"; }
 refine_keyword
-  = "refine"
+  = "refine" { return "refine_keyword"; }
 require_instance_keyword
-  = "require-instance"
+  = "require-instance" { return "require_instance_keyword"; }
 revision_keyword
-  = "revision"
+  = "revision" { return "revision_keyword"; }
 revision_date_keyword
-  = "revision-date"
+  = "revision-date" { return "revision_date_keyword"; }
 rpc_keyword
-  = "rpc"
+  = "rpc" { return "rpc_keyword"; }
 status_keyword
-  = "status"
+  = "status" { return "status_keyword"; }
 submodule_keyword
-  = "submodule"
+  = "submodule" { return "submodule_keyword"; }
 type_keyword
-  = "type"
+  = "type" { return "type_keyword"; }
 typedef_keyword
-  = "typedef"
+  = "typedef" { return "typedef_keyword"; }
 unique_keyword
-  = "unique"
+  = "unique" { return "unique_keyword"; }
 units_keyword
-  = "units"
+  = "units" { return "units_keyword"; }
 uses_keyword
-  = "uses"
+  = "uses" { return "uses_keyword"; }
 value_keyword
-  = "value"
+  = "value" { return "value_keyword"; }
 when_keyword
-  = "when"
+  = "when" { return "when_keyword"; }
 yang_version_keyword
-  = "yang-version"
+  = "yang-version" { return "yang_version_keyword"; }
 yin_element_keyword
-  = "yin-element"
+  = "yin-element" { return "yin_element_keyword"; }
 
 // other keywords
 
@@ -1867,7 +1870,7 @@ max_keyword
 min_keyword
   = "min"
 not_supported_keyword
-  = "not_supported"
+  = "not-supported"
 obsolete_keyword
   = "obsolete"
 replace_keyword
@@ -1955,44 +1958,35 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_stmt
-  = p:prefix ":" i:identifier s:(sep string)? optsep ";" optsep {
+  = p:prefix ":" n:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
-	    type:"unknown",
+	    type:"unknown_keyword",
 	    prefix:p,
-		name:i,
-		param:extractOptional(s, 1),
-		subs:null
-	};
-  }
-  / p:prefix ":" i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" optsep {
-    return {
-	    type:"unknown",
-	    prefix:p,
-		name:i,
-		param:extractOptional(s, 1),
-		subs:extractList(sub, 0)
+		name:n,
+		param:extractOptional(m, 1),
+		subs:s
 	};
   }
 
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 unknown_stmt2
-  = p:(prefix ":")? i:identifier s:(sep string)? optsep ";" optsep {
+  = p:(prefix ":")? n:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
+	    type:"unknown_keyword",
 	    prefix:extractOptional(p, 0),
-		id:i,
-		param:extractOptional(s, 1)
-	};
-  }
-  / p:(prefix ":")? i:identifier s:(sep string)? optsep "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" optsep {
-    return {
-	    prefix:extractOptional(p, 0),
-		id:i,
-		param:extractOptional(s, 1),
-		subs:extractList(sub, 0)
+		name:n,
+		param:extractOptional(m, 1),
+		subs:s
 	};
   }
 
+unknown_stmt2_subs
+ = ";" { return []; }
+ / "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" {
+   return extractList(sub, 0);
+ }
+ 
 prefix
   = identifier
 
