@@ -31,10 +31,11 @@ start_rule
  /  submodule_stmt
  
 module_stmt
-  = optsep k:module_keyword sep n:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+  = optsep k:module_keyword sep a:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  header:h,
 	  linkage:l,
 	  meta:m,
@@ -44,10 +45,11 @@ module_stmt
   }
 
 submodule_stmt
-  = optsep k:submodule_keyword sep n:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
+  = optsep k:submodule_keyword sep a:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  header:h,
 	  linkage:l,
 	  meta:m,
@@ -140,10 +142,11 @@ data_def_stmt
   / unknown_stmt
 
 yang_version_stmt
-  = k:yang_version_keyword sep v:yang_version_arg_str optsep stmtend {
+  = k:yang_version_keyword sep a:yang_version_arg_str optsep stmtend {
     return {
-	  type:k,
-	  version:v
+	  type:"yang_version",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -156,21 +159,23 @@ yang_version_arg
   = "1"
 
 import_stmt
-  = k:import_keyword sep n:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
+  = k:import_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
 "}" {
   return {
     type:k,
-	name:n,
+	keyword:k,
+	arg:a,
 	prefix:p,
 	revision_date:extractOptional(d, 0)
   };
 }
 
 include_stmt
-  = k:include_keyword sep n:identifier_arg_str optsep s:include_stmt_subs { 
+  = k:include_keyword sep a:identifier_arg_str optsep s:include_stmt_subs { 
       return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   } 
@@ -182,10 +187,11 @@ include_stmt_subs
   }
   
 namespace_stmt
-  = k:namespace_keyword sep u:uri_str optsep stmtend {
+  = k:namespace_keyword sep a:uri_str optsep stmtend {
     return {
 	  type:k,
-	  uri:u
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -195,67 +201,75 @@ uri_str
   / uri
 
 prefix_stmt
-  = k:prefix_keyword sep p:prefix_arg_str optsep stmtend {
+  = k:prefix_keyword sep a:prefix_arg_str optsep stmtend {
     return {
 	  type:k,
-	  prefix:p
+	  keyword:k,
+	  arg:a
 	};
   }
 
 belongs_to_stmt
-  = k:belongs_to_keyword sep n:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
+  = k:belongs_to_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
     return {
-	  type:k,
-	  name:n,
+	  type:"belongs_to",
+	  keyword:k,
+	  arg:a,
 	  prefix:p
 	};
   }
 
 organization_stmt
-  = k:organization_keyword sep v:string optsep stmtend {
+  = k:organization_keyword sep a:string optsep stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 contact_stmt
-  = k:contact_keyword sep v:string optsep stmtend {
+  = k:contact_keyword sep a:string optsep stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 description_stmt
-  = k:description_keyword sep v:string optsep stmtend {
+  = k:description_keyword sep a:string optsep stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 reference_stmt
-  = k:reference_keyword sep v:string optsep stmtend {
+  = k:reference_keyword sep a:string optsep stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 units_stmt
-  = k:units_keyword sep v:string optsep stmtend {
+  = k:units_keyword sep a:string optsep stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 revision_stmt
-  = k:revision_keyword sep d:revision_date optsep s:revision_stmt_subs {
+  = k:revision_keyword sep a:revision_date optsep s:revision_stmt_subs {
     return {
 	  type:k,
-	  date:d,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -281,18 +295,20 @@ revision_date
   = date_arg_str
 
 revision_date_stmt
-  = k:revision_date_keyword sep d:revision_date stmtend {
+  = k:revision_date_keyword sep a:revision_date stmtend {
     return {
-	  type:k,
-	  date:d
+	  type:"revision_date",
+	  keyword:k,
+	  arg:a
 	};
   }
 
 extension_stmt
-  = k:extension_keyword sep n:identifier_arg_str optsep s:extension_stmt_subs {
+  = k:extension_keyword sep a:identifier_arg_str optsep s:extension_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -316,10 +332,11 @@ extension_stmt_sub_
   / unknown_stmt
 
 argument_stmt
-  = k:argument_keyword sep n:identifier_arg_str optsep s:argument_stmt_subs {
+  = k:argument_keyword sep a:identifier_arg_str optsep s:argument_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   } 
@@ -331,10 +348,11 @@ argument_stmt_subs
  }
  
 yin_element_stmt
-  = k:yin_element_keyword sep v:yin_element_arg_str stmtend {
+  = k:yin_element_keyword sep a:yin_element_arg_str stmtend {
     return {
-	  type:k,
-	  element:v
+	  type:"yin_element",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -348,10 +366,11 @@ yin_element_arg
   / false_keyword
 
 identity_stmt
-  = k:identity_keyword sep n:identifier_arg_str optsep s:identity_stmt_subs {
+  = k:identity_keyword sep a:identifier_arg_str optsep s:identity_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -375,18 +394,20 @@ identity_stmt_sub_
   / unknown_stmt
   
 base_stmt
-  = k:base_keyword sep v:identifier_ref_arg_str optsep stmtend {
+  = k:base_keyword sep a:identifier_ref_arg_str optsep stmtend {
     return {
 	  type:k,
-	  name:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 feature_stmt
-  = k:feature_keyword sep n:identifier_arg_str optsep s:feature_stmt_subs {
+  = k:feature_keyword sep a:identifier_arg_str optsep s:feature_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -410,18 +431,20 @@ feature_stmt_sub_
   / unknown_stmt
   
 if_feature_stmt
-  = k:if_feature_keyword sep n:identifier_ref_arg_str optsep stmtend {
+  = k:if_feature_keyword sep a:identifier_ref_arg_str optsep stmtend {
     return {
-	  type:k,
-	  name:n
+	  type:"if_feature",
+	  keyword:k,
+	  arg:a
 	};
   }
 
 typedef_stmt
-  = k:typedef_keyword sep n:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
+  = k:typedef_keyword sep a:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -443,10 +466,11 @@ typedef_stmt_sub_
   / unknown_stmt
   
 type_stmt
-  = k:type_keyword sep n:identifier_ref_arg_str optsep s:type_body_stmts {
+  = k:type_keyword sep a:identifier_ref_arg_str optsep s:type_body_stmts {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -483,10 +507,11 @@ numerical_restrictions
   = r:range_stmt stmtsep { return r; }
 
 range_stmt
-  = k:range_keyword sep v:range_arg_str optsep s:range_stmt_subs {
+  = k:range_keyword sep a:range_arg_str optsep s:range_stmt_subs {
     return {
 	  type:k,
-	  range:v,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -514,10 +539,11 @@ decimal64_specification
   = f:fraction_digits_stmt stmtsep { return f; }
 
 fraction_digits_stmt
-  = k:fraction_digits_keyword sep v:fraction_digits_arg_str stmtend {
+  = k:fraction_digits_keyword sep a:fraction_digits_arg_str stmtend {
       return {
-	      type:k,
-		  value:v
+	      type:"fraction_digits",
+		  keyword:k,
+		  arg:a
 	  };
   }
 
@@ -545,10 +571,11 @@ string_restriction_
   / unknown_stmt
   
 length_stmt
-  = k:length_keyword sep n:length_arg_str optsep s:length_stmt_subs {
+  = k:length_keyword sep a:length_arg_str optsep s:length_stmt_subs {
     return {
 	  type:k,
-	  value:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -572,10 +599,11 @@ length_stmt_sub_
   / unknown_stmt
   
 pattern_stmt
-  = k:pattern_keyword sep n:string optsep s:pattern_stmt_subs {
+  = k:pattern_keyword sep a:string optsep s:pattern_stmt_subs {
     return {
 	  type:k,
-	  pattern:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -599,10 +627,11 @@ pattern_stmt_sub_
   / unknown_stmt
   
 default_stmt
-  = k:default_keyword sep v:string stmtend {
+  = k:default_keyword sep a:string stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -612,10 +641,11 @@ enum_specification
   }
 
 enum_stmt
-  = k:enum_keyword sep v:string optsep s:enum_stmt_subs {
+  = k:enum_keyword sep a:string optsep s:enum_stmt_subs {
     return {
 	  type:k,
-	  text:v,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -642,18 +672,20 @@ leafref_specification
   = p:path_stmt stmtsep { return p; }
 
 path_stmt
-  = k:path_keyword sep v:path_arg_str stmtend {
+  = k:path_keyword sep a:path_arg_str stmtend {
     return {
 	  type:k,
-	  path:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 require_instance_stmt
-  = k:require_instance_keyword sep v:require_instance_arg_str stmtend {
+  = k:require_instance_keyword sep a:require_instance_arg_str stmtend {
     return {
-	  type:k,
-	  require:v
+	  type:"require_instance",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -684,10 +716,11 @@ bits_specification
   }
 
 bit_stmt
-  = k:bit_keyword sep n:identifier_arg_str optsep s:bit_stmt_subs {
+  = k:bit_keyword sep a:identifier_arg_str optsep s:bit_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -711,10 +744,11 @@ bit_stmt_sub_
   / unknown_stmt
   
 position_stmt
-  = k:position_keyword sep v:position_value_arg_str stmtend {
+  = k:position_keyword sep a:position_value_arg_str stmtend {
     return {
 	  type:k,
-	  position:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -727,10 +761,11 @@ position_value_arg
   = non_negative_integer_value
 
 status_stmt
-  = k:status_keyword sep v:status_arg_str stmtend {
+  = k:status_keyword sep a:status_arg_str stmtend {
     return {
 	  type:k,
-	  status:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -745,10 +780,11 @@ status_arg
   / deprecated_keyword
 
 config_stmt
-  = k:config_keyword sep v:config_arg_str stmtend {
+  = k:config_keyword sep a:config_arg_str stmtend {
     return {
 	  type:k,
-	  config:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -762,10 +798,11 @@ config_arg
   / false_keyword
 
 mandatory_stmt
-  = k:mandatory_keyword sep v:mandatory_arg_str stmtend {
+  = k:mandatory_keyword sep a:mandatory_arg_str stmtend {
     return {
 	  type:k,
-	  mandatory:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -779,18 +816,20 @@ mandatory_arg
   / false_keyword
 
 presence_stmt
-  = k:presence_keyword sep v:string stmtend {
+  = k:presence_keyword sep a:string stmtend {
     return {
 	  type:k,
-	  text:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 ordered_by_stmt
-  = k:ordered_by_keyword sep v:ordered_by_arg_str stmtend {
+  = k:ordered_by_keyword sep a:ordered_by_arg_str stmtend {
     return {
-	  type:k,
-	  order:v
+	  type:"ordered_by",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -804,10 +843,11 @@ ordered_by_arg
   / system_keyword
 
 must_stmt
-  = k:must_keyword sep v:string optsep s:must_stmt_subs {
+  = k:must_keyword sep a:string optsep s:must_stmt_subs {
     return {
 	  type:k,
-	  text:v,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -831,26 +871,29 @@ must_stmt_sub_
   / unknown_stmt
   
 error_message_stmt
-  = k:error_message_keyword sep v:string stmtend {
+  = k:error_message_keyword sep a:string stmtend {
     return {
-	  type:k,
-	  text:v
+	  type:"error_message",
+	  keyword:k,
+	  arg:a
 	};
   }
 
 error_app_tag_stmt
-  = k:error_app_tag_keyword sep v:string stmtend {
+  = k:error_app_tag_keyword sep a:string stmtend {
     return {
-	  type:k,
-	  text:v
+	  type:"error_app_tag",
+	  keyword:k,
+	  arg:a
 	};
   }
 
 min_elements_stmt
-  = k:min_elements_keyword sep v:min_value_arg_str stmtend {
+  = k:min_elements_keyword sep a:min_value_arg_str stmtend {
     return {
-	  type:k,
-	  value:v
+	  type:"min_elements",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -863,10 +906,11 @@ min_value_arg
   = non_negative_integer_value
 
 max_elements_stmt
-  = k:max_elements_keyword sep v:max_value_arg_str stmtend {
+  = k:max_elements_keyword sep a:max_value_arg_str stmtend {
     return {
-	  type:k,
-	  value:v
+	  type:"max_elements",
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -880,10 +924,11 @@ max_value_arg
   / positive_integer_value
 
 value_stmt
-  = k:value_keyword sep v:integer_value_arg_str stmtend {
+  = k:value_keyword sep a:integer_value_arg_str stmtend {
     return {
 	  type:k,
-	  integer:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -896,10 +941,11 @@ integer_value_arg
   = integer_value
 
 grouping_stmt
-  = k:grouping_keyword sep n:identifier_arg_str optsep s:grouping_stmt_subs {
+  = k:grouping_keyword sep a:identifier_arg_str optsep s:grouping_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -925,10 +971,11 @@ grouping_stmt_sub_
   / unknown_stmt
   
 container_stmt
-  = k:container_keyword sep n:identifier_arg_str optsep s:container_stmt_subs {
+  = k:container_keyword sep a:identifier_arg_str optsep s:container_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -959,10 +1006,11 @@ container_stmt_sub_
   / unknown_stmt
   
 leaf_stmt
-  = k:leaf_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
+  = k:leaf_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -989,10 +1037,11 @@ leaf_stmt_sub_
   / unknown_stmt
   
 leaf_list_stmt
-  = k:leaf_list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
+  = k:leaf_list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
     return {
-	  type:k,
-	  name:n,
+	  type:"leaf_list",
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1020,10 +1069,11 @@ leaf_list_stmt_sub_
   / unknown_stmt
   
 list_stmt
-  = k:list_keyword sep n:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
+  = k:list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1054,10 +1104,11 @@ list_stmt_sub_
   / unknown_stmt
   
 key_stmt
-  = k:key_keyword sep v:key_arg_str stmtend {
+  = k:key_keyword sep a:key_arg_str stmtend {
     return {
 	  type:k,
-	  key:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -1072,10 +1123,11 @@ key_arg
   }
 
 unique_stmt
-  = k:unique_keyword sep v:unique_arg_str stmtend {
+  = k:unique_keyword sep a:unique_arg_str stmtend {
     return {
 	  type:k,
-	  unique:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
@@ -1090,10 +1142,11 @@ unique_arg
   }
 
 choice_stmt
-  = k:choice_keyword sep n:identifier_arg_str optsep s:choice_stmt_subs {
+  = k:choice_keyword sep a:identifier_arg_str optsep s:choice_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1131,10 +1184,11 @@ short_case_stmt
   / unknown_stmt
   
 case_stmt
-  = k:case_keyword sep n:identifier_arg_str optsep s:case_stmt_subs {
+  = k:case_keyword sep a:identifier_arg_str optsep s:case_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1160,10 +1214,11 @@ case_stmt_sub_
   / unknown_stmt
   
 anyxml_stmt
-  = k:anyxml_keyword sep n:identifier_arg_str optsep s:anyxml_stmt_subs {
+  = k:anyxml_keyword sep a:identifier_arg_str optsep s:anyxml_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1191,10 +1246,11 @@ anyxml_stmt_sub_
   / unknown_stmt
   
 uses_stmt
-  = k:uses_keyword sep n:identifier_ref_arg_str optsep s:uses_stmt_subs {
+  = k:uses_keyword sep a:identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1221,10 +1277,11 @@ uses_stmt_sub_
   / unknown_stmt
   
 refine_stmt
-  = k:refine_keyword sep n:refine_arg_str optsep s:refine_stmt_subs {
+  = k:refine_keyword sep a:refine_arg_str optsep s:refine_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1259,10 +1316,11 @@ refine_stmt_sub_
   / unknown_stmt
   
 uses_augment_stmt
-  = k:augment_keyword sep n:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
+  = k:augment_keyword sep a:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1293,10 +1351,11 @@ uses_augment_arg
   = descendant_schema_nodeid
 
 augment_stmt
-  = k:augment_keyword sep n:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
+  = k:augment_keyword sep a:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1327,10 +1386,11 @@ augment_arg
   = absolute_schema_nodeid
 
 when_stmt
-  = k:when_keyword sep v:string optsep s:when_stmt_subs {
+  = k:when_keyword sep a:string optsep s:when_stmt_subs {
     return {
 	  type:k,
-	  text:v,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1352,10 +1412,11 @@ when_stmt_sub_
   / unknown_stmt
   
 rpc_stmt
-  = k:rpc_keyword sep n:identifier_arg_str optsep s:rpc_stmt_subs {
+  = k:rpc_keyword sep a:identifier_arg_str optsep s:rpc_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1386,6 +1447,7 @@ input_stmt
   = k:input_keyword optsep "{" stmtsep s:input_stmt_subs_ "}" {
     return {
 	  type:k,
+	  keyword:k,
 	  subs:s
 	};
   }
@@ -1407,6 +1469,7 @@ output_stmt
   = k:output_keyword optsep "{" stmtsep s:output_stmt_subs_ "}" {
     return {
 	  type:k,
+	  keyword:k,
 	  subs:s
 	};
   }
@@ -1425,10 +1488,11 @@ output_stmt_sub_
   / unknown_stmt
   
 notification_stmt
-  = k:notification_keyword sep n:identifier_arg_str optsep s:notification_stmt_subs {
+  = k:notification_keyword sep a:identifier_arg_str optsep s:notification_stmt_subs {
     return {
 	  type:k,
-	  name:n,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1455,10 +1519,11 @@ notification_stmt_sub_
   / unknown_stmt
   
 deviation_stmt
-  = k:deviation_keyword sep v:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
+  = k:deviation_keyword sep a:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
     return {
 	  type:k,
-	  deviation:v,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1489,18 +1554,20 @@ deviation_arg
   = absolute_schema_nodeid
 
 deviate_not_supported_stmt
-  = k:deviate_keyword sep v:not_supported_keyword optsep (";" / "{" stmtsep "}") {
+  = k:deviate_keyword sep a:not_supported_keyword optsep (";" / "{" stmtsep "}") {
     return {
 	  type:k,
-	  sub_type:v
+	  keyword:k,
+	  arg:a
 	};
   }
 
 deviate_add_stmt
-  = k:deviate_keyword sep sk:add_keyword optsep s:deviate_add_stmt_subs {
+  = k:deviate_keyword sep a:add_keyword optsep s:deviate_add_stmt_subs {
     return {
 	  type:k,
-	  sub_type:sk,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1528,10 +1595,11 @@ deviate_add_stmt_sub_
   / unknown_stmt
   
 deviate_delete_stmt
-  = k:deviate_keyword sep sk:delete_keyword optsep s:deviate_delete_stmt_subs {
+  = k:deviate_keyword sep a:delete_keyword optsep s:deviate_delete_stmt_subs {
     return {
 	  type:k,
-	  sub_type:sk,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1555,10 +1623,11 @@ deviate_delete_stmt_sub_
   / unknown_stmt
   
 deviate_replace_stmt
-  = k:deviate_keyword sep sk:replace_keyword optsep s:deviate_replace_stmt_subs {
+  = k:deviate_keyword sep a:replace_keyword optsep s:deviate_replace_stmt_subs {
     return {
 	  type:k,
-	  sub_type:sk,
+	  keyword:k,
+	  arg:a,
 	  subs:s
 	};
   }
@@ -1723,135 +1792,135 @@ rel_path_keyexpr
 
 // statement keywords
 anyxml_keyword
-  = "anyxml" { return "anyxml_keyword"; }
+  = "anyxml"
 argument_keyword
-  = "argument" { return "argument_keyword"; }
+  = "argument"
 augment_keyword
-  = "augment" { return "augment_keyword"; }
+  = "augment"
 base_keyword
-  = "base" { return "base_keyword"; }
+  = "base"
 belongs_to_keyword
-  = "belongs-to" { return "belongs_to_keyword"; }
+  = "belongs-to"
 bit_keyword
-  = "bit" { return "bit_keyword"; }
+  = "bit"
 case_keyword
-  = "case" { return "case_keyword"; }
+  = "case"
 choice_keyword
-  = "choice" { return "choice_keyword"; }
+  = "choice"
 config_keyword
-  = "config" { return "config_keyword"; }
+  = "config"
 contact_keyword
-  = "contact" { return "contact_keyword"; }
+  = "contact"
 container_keyword
-  = "container" { return "container_keyword"; }
+  = "container"
 default_keyword
-  = "default" { return "default_keyword"; }
+  = "default"
 description_keyword
-  = "description" { return "description_keyword"; }
+  = "description"
 enum_keyword
-  = "enum" { return "enum_keyword"; }
+  = "enum"
 error_app_tag_keyword
-  = "error-app-tag" { return "error_app_tag_keyword"; }
+  = "error-app-tag"
 error_message_keyword
-  = "error-message" { return "error_message_keyword"; }
+  = "error-message"
 extension_keyword
-  = "extension" { return "extension_keyword"; }
+  = "extension"
 deviation_keyword
-  = "deviation" { return "deviation_keyword"; }
+  = "deviation"
 deviate_keyword
-  = "deviate" { return "deviate_keyword"; }
+  = "deviate"
 feature_keyword
-  = "feature" { return "feature_keyword"; }
+  = "feature"
 fraction_digits_keyword
-  = "fraction-digits" { return "fraction_digits_keyword"; }
+  = "fraction-digits"
 grouping_keyword
-  = "grouping" { return "grouping_keyword"; }
+  = "grouping"
 identity_keyword
-  = "identity" { return "identity_keyword"; }
+  = "identity"
 if_feature_keyword
-  = "if-feature" { return "if_feature_keyword"; }
+  = "if-feature"
 import_keyword
-  = "import" { return "import_keyword"; }
+  = "import"
 include_keyword
-  = "include" { return "include_keyword"; }
+  = "include"
 input_keyword
-  = "input" { return "input_keyword"; }
+  = "input"
 key_keyword
-  = "key" { return "key_keyword"; }
+  = "key"
 leaf_keyword
-  = "leaf" { return "leaf_keyword"; }
+  = "leaf"
 leaf_list_keyword
-  = "leaf-list" { return "leaf_list_keyword"; }
+  = "leaf-list"
 length_keyword
-  = "length" { return "length_keyword"; }
+  = "length"
 list_keyword
-  = "list" { return "list_keyword"; }
+  = "list"
 mandatory_keyword
-  = "mandatory" { return "mandatory_keyword"; }
+  = "mandatory"
 max_elements_keyword
-  = "max-elements" { return "max_elements_keyword"; }
+  = "max-elements"
 min_elements_keyword
-  = "min-elements"  { return "min_elements_keyword"; }
+  = "min-elements"
 module_keyword
-  = "module" { return "module_keyword"; }
+  = "module"
 must_keyword
-  = "must" { return "must_keyword"; }
+  = "must"
 namespace_keyword
-  = "namespace" { return "namespace_keyword"; }
+  = "namespace"
 notification_keyword
-  = "notification" { return "notification_keyword"; }
+  = "notification"
 ordered_by_keyword
-  = "ordered-by" { return "ordered_by_keyword"; }
+  = "ordered-by"
 organization_keyword
-  = "organization" { return "organization_keyword"; }
+  = "organization"
 output_keyword
-  = "output" { return "output_keyword"; }
+  = "output"
 path_keyword
-  = "path" { return "path_keyword"; }
+  = "path"
 pattern_keyword
-  = "pattern" { return "pattern_keyword"; }
+  = "pattern"
 position_keyword
-  = "position" { return "position_keyword"; }
+  = "position"
 prefix_keyword
-  = "prefix" { return "prefix_keyword"; }
+  = "prefix"
 presence_keyword
-  = "presence" { return "presence_keyword"; }
+  = "presence"
 range_keyword
-  = "range" { return "range_keyword"; }
+  = "range"
 reference_keyword
-  = "reference" { return "reference_keyword"; }
+  = "reference"
 refine_keyword
-  = "refine" { return "refine_keyword"; }
+  = "refine"
 require_instance_keyword
-  = "require-instance" { return "require_instance_keyword"; }
+  = "require-instance"
 revision_keyword
-  = "revision" { return "revision_keyword"; }
+  = "revision"
 revision_date_keyword
-  = "revision-date" { return "revision_date_keyword"; }
+  = "revision-date"
 rpc_keyword
-  = "rpc" { return "rpc_keyword"; }
+  = "rpc"
 status_keyword
-  = "status" { return "status_keyword"; }
+  = "status"
 submodule_keyword
-  = "submodule" { return "submodule_keyword"; }
+  = "submodule"
 type_keyword
-  = "type" { return "type_keyword"; }
+  = "type"
 typedef_keyword
-  = "typedef" { return "typedef_keyword"; }
+  = "typedef"
 unique_keyword
-  = "unique" { return "unique_keyword"; }
+  = "unique"
 units_keyword
-  = "units" { return "units_keyword"; }
+  = "units"
 uses_keyword
-  = "uses" { return "uses_keyword"; }
+  = "uses"
 value_keyword
-  = "value" { return "value_keyword"; }
+  = "value"
 when_keyword
-  = "when" { return "when_keyword"; }
+  = "when"
 yang_version_keyword
-  = "yang-version" { return "yang_version_keyword"; }
+  = "yang-version"
 yin_element_keyword
-  = "yin-element" { return "yin_element_keyword"; }
+  = "yin-element"
 
 // other keywords
 
@@ -1914,7 +1983,7 @@ identifier_ref_arg
   = p:(prefix ":")? i:identifier {
     return { 
 	    prefix:extractOptional(p, 0),
-	    name:i
+	    id:i
 	};
   }
 
@@ -1958,12 +2027,12 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_stmt
-  = p:prefix ":" n:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = p:prefix ":" i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_keyword",
 	    prefix:p,
-		name:n,
-		param:extractOptional(m, 1),
+		id:i,
+		arg:extractOptional(m, 1),
 		subs:s
 	};
   }
@@ -1971,12 +2040,12 @@ unknown_stmt
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 unknown_stmt2
-  = p:(prefix ":")? n:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = p:(prefix ":")? i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_keyword",
 	    prefix:extractOptional(p, 0),
-		name:n,
-		param:extractOptional(m, 1),
+		id:i,
+		arg:extractOptional(m, 1),
 		subs:s
 	};
   }
