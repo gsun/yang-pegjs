@@ -36,11 +36,7 @@ module_stmt
 	  type:k,
 	  keyword:k,
 	  arg:a,
-	  header:h,
-	  linkage:l,
-	  meta:m,
-	  revision:r,
-	  body:b
+	  subs:h.concat(l,m,r,b)
 	};
   }
 
@@ -50,11 +46,7 @@ submodule_stmt
 	  type:k,
 	  keyword:k,
 	  arg:a,
-	  header:h,
-	  linkage:l,
-	  meta:m,
-	  revision:r,
-	  body:b
+	  subs:h.concat(l,m,r,b)
 	};
   }
 // these stmts can appear in any order
@@ -146,7 +138,8 @@ yang_version_stmt
     return {
 	  type:"yang_version",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -165,8 +158,7 @@ import_stmt
     type:k,
 	keyword:k,
 	arg:a,
-	prefix:p,
-	revision_date:extractOptional(d, 0)
+	subs: extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p]
   };
 }
 
@@ -191,7 +183,8 @@ namespace_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -205,7 +198,8 @@ prefix_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -215,7 +209,7 @@ belongs_to_stmt
 	  type:"belongs_to",
 	  keyword:k,
 	  arg:a,
-	  prefix:p
+	  subs:[p]
 	};
   }
 
@@ -224,7 +218,8 @@ organization_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -233,7 +228,8 @@ contact_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -242,7 +238,8 @@ description_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -251,7 +248,8 @@ reference_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -260,7 +258,8 @@ units_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -299,7 +298,8 @@ revision_date_stmt
     return {
 	  type:"revision_date",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -352,7 +352,8 @@ yin_element_stmt
     return {
 	  type:"yin_element",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -398,7 +399,8 @@ base_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -435,7 +437,8 @@ if_feature_stmt
     return {
 	  type:"if_feature",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -543,7 +546,8 @@ fraction_digits_stmt
       return {
 	      type:"fraction_digits",
 		  keyword:k,
-		  arg:a
+		  arg:a,
+	      subs:[]
 	  };
   }
 
@@ -631,7 +635,8 @@ default_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -676,7 +681,8 @@ path_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -685,7 +691,8 @@ require_instance_stmt
     return {
 	  type:"require_instance",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -748,7 +755,8 @@ position_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -765,7 +773,8 @@ status_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -784,7 +793,8 @@ config_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -802,7 +812,8 @@ mandatory_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -820,7 +831,8 @@ presence_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -829,7 +841,8 @@ ordered_by_stmt
     return {
 	  type:"ordered_by",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -875,7 +888,8 @@ error_message_stmt
     return {
 	  type:"error_message",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -884,7 +898,8 @@ error_app_tag_stmt
     return {
 	  type:"error_app_tag",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -893,7 +908,8 @@ min_elements_stmt
     return {
 	  type:"min_elements",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -910,7 +926,8 @@ max_elements_stmt
     return {
 	  type:"max_elements",
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -928,7 +945,8 @@ value_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -1108,7 +1126,8 @@ key_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -1127,7 +1146,8 @@ unique_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
@@ -1558,7 +1578,8 @@ deviate_not_supported_stmt
     return {
 	  type:k,
 	  keyword:k,
-	  arg:a
+	  arg:a,
+	  subs:[]
 	};
   }
 
