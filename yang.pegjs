@@ -33,7 +33,7 @@ start_rule
 module_stmt
   = optsep k:module_keyword sep a:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
-	  type:k,
+	  type:"module_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:h.concat(l,m,r,b)
@@ -43,7 +43,7 @@ module_stmt
 submodule_stmt
   = optsep k:submodule_keyword sep a:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
-	  type:k,
+	  type:"submodule_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:h.concat(l,m,r,b)
@@ -136,7 +136,7 @@ data_def_stmt
 yang_version_stmt
   = k:yang_version_keyword sep a:yang_version_arg_str optsep stmtend {
     return {
-	  type:"yang_version",
+	  type:"yang_version_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -155,7 +155,7 @@ import_stmt
   = k:import_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
 "}" {
   return {
-    type:k,
+    type:"import_stmt",
 	keyword:k,
 	arg:a,
 	subs: extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p]
@@ -165,7 +165,7 @@ import_stmt
 include_stmt
   = k:include_keyword sep a:identifier_arg_str optsep s:include_stmt_subs { 
       return {
-	  type:k,
+	  type:"include_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -181,7 +181,7 @@ include_stmt_subs
 namespace_stmt
   = k:namespace_keyword sep a:uri_str optsep stmtend {
     return {
-	  type:k,
+	  type:"namespace_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -196,7 +196,7 @@ uri_str
 prefix_stmt
   = k:prefix_keyword sep a:prefix_arg_str optsep stmtend {
     return {
-	  type:k,
+	  type:"prefix_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -206,7 +206,7 @@ prefix_stmt
 belongs_to_stmt
   = k:belongs_to_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
     return {
-	  type:"belongs_to",
+	  type:"belongs_to_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[p]
@@ -216,7 +216,7 @@ belongs_to_stmt
 organization_stmt
   = k:organization_keyword sep a:string optsep stmtend {
     return {
-	  type:k,
+	  type:"organization_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -226,7 +226,7 @@ organization_stmt
 contact_stmt
   = k:contact_keyword sep a:string optsep stmtend {
     return {
-	  type:k,
+	  type:"contact_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -236,7 +236,7 @@ contact_stmt
 description_stmt
   = k:description_keyword sep a:string optsep stmtend {
     return {
-	  type:k,
+	  type:"description_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -246,7 +246,7 @@ description_stmt
 reference_stmt
   = k:reference_keyword sep a:string optsep stmtend {
     return {
-	  type:k,
+	  type:"reference_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -256,7 +256,7 @@ reference_stmt
 units_stmt
   = k:units_keyword sep a:string optsep stmtend {
     return {
-	  type:k,
+	  type:"units_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -266,7 +266,7 @@ units_stmt
 revision_stmt
   = k:revision_keyword sep a:revision_date optsep s:revision_stmt_subs {
     return {
-	  type:k,
+	  type:"revision_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -296,7 +296,7 @@ revision_date
 revision_date_stmt
   = k:revision_date_keyword sep a:revision_date stmtend {
     return {
-	  type:"revision_date",
+	  type:"revision_date_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -306,7 +306,7 @@ revision_date_stmt
 extension_stmt
   = k:extension_keyword sep a:identifier_arg_str optsep s:extension_stmt_subs {
     return {
-	  type:k,
+	  type:"extension_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -334,7 +334,7 @@ extension_stmt_sub_
 argument_stmt
   = k:argument_keyword sep a:identifier_arg_str optsep s:argument_stmt_subs {
     return {
-	  type:k,
+	  type:"argument_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -350,7 +350,7 @@ argument_stmt_subs
 yin_element_stmt
   = k:yin_element_keyword sep a:yin_element_arg_str stmtend {
     return {
-	  type:"yin_element",
+	  type:"yin_element_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -369,7 +369,7 @@ yin_element_arg
 identity_stmt
   = k:identity_keyword sep a:identifier_arg_str optsep s:identity_stmt_subs {
     return {
-	  type:k,
+	  type:"identity_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -397,7 +397,7 @@ identity_stmt_sub_
 base_stmt
   = k:base_keyword sep a:identifier_ref_arg_str optsep stmtend {
     return {
-	  type:k,
+	  type:"base_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -407,7 +407,7 @@ base_stmt
 feature_stmt
   = k:feature_keyword sep a:identifier_arg_str optsep s:feature_stmt_subs {
     return {
-	  type:k,
+	  type:"feature_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -435,7 +435,7 @@ feature_stmt_sub_
 if_feature_stmt
   = k:if_feature_keyword sep a:identifier_ref_arg_str optsep stmtend {
     return {
-	  type:"if_feature",
+	  type:"if_feature_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -445,7 +445,7 @@ if_feature_stmt
 typedef_stmt
   = k:typedef_keyword sep a:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"typedef_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -471,7 +471,7 @@ typedef_stmt_sub_
 type_stmt
   = k:type_keyword sep a:identifier_ref_arg_str optsep s:type_body_stmts {
     return {
-	  type:k,
+	  type:"type_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -512,7 +512,7 @@ numerical_restrictions
 range_stmt
   = k:range_keyword sep a:range_arg_str optsep s:range_stmt_subs {
     return {
-	  type:k,
+	  type:"range_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -544,7 +544,7 @@ decimal64_specification
 fraction_digits_stmt
   = k:fraction_digits_keyword sep a:fraction_digits_arg_str stmtend {
       return {
-	      type:"fraction_digits",
+	      type:"fraction_digits_stmt",
 		  keyword:k,
 		  arg:a,
 	      subs:[]
@@ -577,7 +577,7 @@ string_restriction_
 length_stmt
   = k:length_keyword sep a:length_arg_str optsep s:length_stmt_subs {
     return {
-	  type:k,
+	  type:"length_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -605,7 +605,7 @@ length_stmt_sub_
 pattern_stmt
   = k:pattern_keyword sep a:string optsep s:pattern_stmt_subs {
     return {
-	  type:k,
+	  type:"pattern_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -633,7 +633,7 @@ pattern_stmt_sub_
 default_stmt
   = k:default_keyword sep a:string stmtend {
     return {
-	  type:k,
+	  type:"default_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -648,7 +648,7 @@ enum_specification
 enum_stmt
   = k:enum_keyword sep a:string optsep s:enum_stmt_subs {
     return {
-	  type:k,
+	  type:"enum_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -679,7 +679,7 @@ leafref_specification
 path_stmt
   = k:path_keyword sep a:path_arg_str stmtend {
     return {
-	  type:k,
+	  type:"path_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -689,7 +689,7 @@ path_stmt
 require_instance_stmt
   = k:require_instance_keyword sep a:require_instance_arg_str stmtend {
     return {
-	  type:"require_instance",
+	  type:"require_instance_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -725,7 +725,7 @@ bits_specification
 bit_stmt
   = k:bit_keyword sep a:identifier_arg_str optsep s:bit_stmt_subs {
     return {
-	  type:k,
+	  type:"bit_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -753,7 +753,7 @@ bit_stmt_sub_
 position_stmt
   = k:position_keyword sep a:position_value_arg_str stmtend {
     return {
-	  type:k,
+	  type:"position_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -771,7 +771,7 @@ position_value_arg
 status_stmt
   = k:status_keyword sep a:status_arg_str stmtend {
     return {
-	  type:k,
+	  type:"status_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -791,7 +791,7 @@ status_arg
 config_stmt
   = k:config_keyword sep a:config_arg_str stmtend {
     return {
-	  type:k,
+	  type:"config_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -810,7 +810,7 @@ config_arg
 mandatory_stmt
   = k:mandatory_keyword sep a:mandatory_arg_str stmtend {
     return {
-	  type:k,
+	  type:"mandatory_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -829,7 +829,7 @@ mandatory_arg
 presence_stmt
   = k:presence_keyword sep a:string stmtend {
     return {
-	  type:k,
+	  type:"presence_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -839,7 +839,7 @@ presence_stmt
 ordered_by_stmt
   = k:ordered_by_keyword sep a:ordered_by_arg_str stmtend {
     return {
-	  type:"ordered_by",
+	  type:"ordered_by_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -858,7 +858,7 @@ ordered_by_arg
 must_stmt
   = k:must_keyword sep a:string optsep s:must_stmt_subs {
     return {
-	  type:k,
+	  type:"must_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -886,7 +886,7 @@ must_stmt_sub_
 error_message_stmt
   = k:error_message_keyword sep a:string stmtend {
     return {
-	  type:"error_message",
+	  type:"error_message_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -896,7 +896,7 @@ error_message_stmt
 error_app_tag_stmt
   = k:error_app_tag_keyword sep a:string stmtend {
     return {
-	  type:"error_app_tag",
+	  type:"error_app_tag_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -906,7 +906,7 @@ error_app_tag_stmt
 min_elements_stmt
   = k:min_elements_keyword sep a:min_value_arg_str stmtend {
     return {
-	  type:"min_elements",
+	  type:"min_elements_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -924,7 +924,7 @@ min_value_arg
 max_elements_stmt
   = k:max_elements_keyword sep a:max_value_arg_str stmtend {
     return {
-	  type:"max_elements",
+	  type:"max_elements_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -943,7 +943,7 @@ max_value_arg
 value_stmt
   = k:value_keyword sep a:integer_value_arg_str stmtend {
     return {
-	  type:k,
+	  type:"value_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -961,7 +961,7 @@ integer_value_arg
 grouping_stmt
   = k:grouping_keyword sep a:identifier_arg_str optsep s:grouping_stmt_subs {
     return {
-	  type:k,
+	  type:"grouping_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -991,7 +991,7 @@ grouping_stmt_sub_
 container_stmt
   = k:container_keyword sep a:identifier_arg_str optsep s:container_stmt_subs {
     return {
-	  type:k,
+	  type:"container_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1026,7 +1026,7 @@ container_stmt_sub_
 leaf_stmt
   = k:leaf_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"leaf_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1057,7 +1057,7 @@ leaf_stmt_sub_
 leaf_list_stmt
   = k:leaf_list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
     return {
-	  type:"leaf_list",
+	  type:"leaf_list_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1089,7 +1089,7 @@ leaf_list_stmt_sub_
 list_stmt
   = k:list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"list_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1124,7 +1124,7 @@ list_stmt_sub_
 key_stmt
   = k:key_keyword sep a:key_arg_str stmtend {
     return {
-	  type:k,
+	  type:"key_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -1144,7 +1144,7 @@ key_arg
 unique_stmt
   = k:unique_keyword sep a:unique_arg_str stmtend {
     return {
-	  type:k,
+	  type:"unique_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -1164,7 +1164,7 @@ unique_arg
 choice_stmt
   = k:choice_keyword sep a:identifier_arg_str optsep s:choice_stmt_subs {
     return {
-	  type:k,
+	  type:"choice_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1206,7 +1206,7 @@ short_case_stmt
 case_stmt
   = k:case_keyword sep a:identifier_arg_str optsep s:case_stmt_subs {
     return {
-	  type:k,
+	  type:"case_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1236,7 +1236,7 @@ case_stmt_sub_
 anyxml_stmt
   = k:anyxml_keyword sep a:identifier_arg_str optsep s:anyxml_stmt_subs {
     return {
-	  type:k,
+	  type:"anyxml_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1268,7 +1268,7 @@ anyxml_stmt_sub_
 uses_stmt
   = k:uses_keyword sep a:identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
-	  type:k,
+	  type:"uses_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1299,7 +1299,7 @@ uses_stmt_sub_
 refine_stmt
   = k:refine_keyword sep a:refine_arg_str optsep s:refine_stmt_subs {
     return {
-	  type:k,
+	  type:"refine_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1338,7 +1338,7 @@ refine_stmt_sub_
 uses_augment_stmt
   = k:augment_keyword sep a:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"uses_augment_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1373,7 +1373,7 @@ uses_augment_arg
 augment_stmt
   = k:augment_keyword sep a:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"augment_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1408,7 +1408,7 @@ augment_arg
 when_stmt
   = k:when_keyword sep a:string optsep s:when_stmt_subs {
     return {
-	  type:k,
+	  type:"when_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1434,7 +1434,7 @@ when_stmt_sub_
 rpc_stmt
   = k:rpc_keyword sep a:identifier_arg_str optsep s:rpc_stmt_subs {
     return {
-	  type:k,
+	  type:"rpc_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1466,7 +1466,7 @@ rpc_stmt_sub_
 input_stmt
   = k:input_keyword optsep "{" stmtsep s:input_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"input_stmt",
 	  keyword:k,
 	  subs:s
 	};
@@ -1488,7 +1488,7 @@ input_stmt_sub_
 output_stmt
   = k:output_keyword optsep "{" stmtsep s:output_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"output_stmt",
 	  keyword:k,
 	  subs:s
 	};
@@ -1510,7 +1510,7 @@ output_stmt_sub_
 notification_stmt
   = k:notification_keyword sep a:identifier_arg_str optsep s:notification_stmt_subs {
     return {
-	  type:k,
+	  type:"notification_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1541,7 +1541,7 @@ notification_stmt_sub_
 deviation_stmt
   = k:deviation_keyword sep a:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
     return {
-	  type:k,
+	  type:"deviation_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1576,7 +1576,7 @@ deviation_arg
 deviate_not_supported_stmt
   = k:deviate_keyword sep a:not_supported_keyword optsep (";" / "{" stmtsep "}") {
     return {
-	  type:k,
+	  type:"deviate_not_supported_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:[]
@@ -1586,7 +1586,7 @@ deviate_not_supported_stmt
 deviate_add_stmt
   = k:deviate_keyword sep a:add_keyword optsep s:deviate_add_stmt_subs {
     return {
-	  type:k,
+	  type:"deviate_add_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1618,7 +1618,7 @@ deviate_add_stmt_sub_
 deviate_delete_stmt
   = k:deviate_keyword sep a:delete_keyword optsep s:deviate_delete_stmt_subs {
     return {
-	  type:k,
+	  type:"deviate_delete_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -1646,7 +1646,7 @@ deviate_delete_stmt_sub_
 deviate_replace_stmt
   = k:deviate_keyword sep a:replace_keyword optsep s:deviate_replace_stmt_subs {
     return {
-	  type:k,
+	  type:"deviate_replace_stmt",
 	  keyword:k,
 	  arg:a,
 	  subs:s
@@ -2050,7 +2050,7 @@ decimal_value
 unknown_stmt
   = p:prefix ":" i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
-	    type:"unknown_keyword",
+	    type:"unknown_stmt",
 	    prefix:p,
 		id:i,
 		arg:extractOptional(m, 1),
@@ -2063,7 +2063,7 @@ unknown_stmt
 unknown_stmt2
   = p:(prefix ":")? i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
-	    type:"unknown_keyword",
+	    type:"unknown_stmt",
 	    prefix:extractOptional(p, 0),
 		id:i,
 		arg:extractOptional(m, 1),
