@@ -395,7 +395,7 @@ identity_stmt_sub_
   / unknown_stmt
   
 base_stmt
-  = k:base_keyword sep a:identifier_ref_arg_str optsep stmtend {
+  = k:base_keyword sep a:$identifier_ref_arg_str optsep stmtend {
     return {
 	  type:"base_stmt",
 	  keyword:k,
@@ -433,7 +433,7 @@ feature_stmt_sub_
   / unknown_stmt
   
 if_feature_stmt
-  = k:if_feature_keyword sep a:identifier_ref_arg_str optsep stmtend {
+  = k:if_feature_keyword sep a:$identifier_ref_arg_str optsep stmtend {
     return {
 	  type:"if_feature_stmt",
 	  keyword:k,
@@ -469,7 +469,7 @@ typedef_stmt_sub_
   / unknown_stmt
   
 type_stmt
-  = k:type_keyword sep a:identifier_ref_arg_str optsep s:type_body_stmts {
+  = k:type_keyword sep a:$identifier_ref_arg_str optsep s:type_body_stmts {
     return {
 	  type:"type_stmt",
 	  keyword:k,
@@ -1137,9 +1137,7 @@ key_arg_str
   / key_arg
 
 key_arg
-  = h:node_identifier t:(sep node_identifier)* {
-    return buildList(h, t, 1);
-  }
+  = node_identifier (sep node_identifier)* { return text(); }
 
 unique_stmt
   = k:unique_keyword sep a:unique_arg_str stmtend {
@@ -1266,7 +1264,7 @@ anyxml_stmt_sub_
   / unknown_stmt
   
 uses_stmt
-  = k:uses_keyword sep a:identifier_ref_arg_str optsep s:uses_stmt_subs {
+  = k:uses_keyword sep a:$identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
 	  type:"uses_stmt",
 	  keyword:k,
@@ -1468,6 +1466,7 @@ input_stmt
     return {
 	  type:"input_stmt",
 	  keyword:k,
+	  arg:null,
 	  subs:s
 	};
   }
@@ -1490,6 +1489,7 @@ output_stmt
     return {
 	  type:"output_stmt",
 	  keyword:k,
+	  arg:null,
 	  subs:s
 	};
   }
@@ -1704,8 +1704,8 @@ length_arg_str
   / length_arg
 
 length_arg
-  = h:length_part t:(optsep "|" optsep length_part)* {
-    return buildList(h, t, 3);
+  = length_part (optsep "|" optsep length_part)* {
+    return text();
   }
 
 length_part
@@ -2048,29 +2048,33 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_stmt
-  = p:prefix ":" i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:unknow_prefix_key m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_stmt",
-	    prefix:p,
-		id:i,
+	    keyword:k,
 		arg:extractOptional(m, 1),
 		subs:s
 	};
   }
 
+unknow_prefix_key 
+  = prefix ":" identifier { return text(); }
+  
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 unknown_stmt2
-  = p:(prefix ":")? i:identifier m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:unknow_key m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_stmt",
-	    prefix:extractOptional(p, 0),
-		id:i,
+	    keyword:k,
 		arg:extractOptional(m, 1),
 		subs:s
 	};
   }
 
+unknow_key 
+  = (prefix ":")? identifier { return text(); }
+  
 unknown_stmt2_subs
  = ";" { return []; }
  / "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" {
