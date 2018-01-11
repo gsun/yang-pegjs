@@ -2096,13 +2096,20 @@ string
   / string_unquoted_
 
 string_quoted_
-  = DQUOTE head:$(!DQUOTE .)* DQUOTE tail:(optsep "+" optsep DQUOTE $(!DQUOTE .)* DQUOTE)* {
+  = DQUOTE head:$stringEscaped DQUOTE tail:(optsep "+" optsep DQUOTE $stringEscaped DQUOTE)* {
     return buildList(head, tail, 4).join('');
   }
   / SQUOTE head:$(!SQUOTE .)* SQUOTE tail:(optsep "+" optsep SQUOTE $(!SQUOTE .)* SQUOTE)* {
     return buildList(head, tail, 4).join('');
   }
-
+  
+stringEscaped
+  = stringChar*
+  
+stringChar
+  = "\\" "\""
+  / !DQUOTE .
+  
 string_unquoted_
   = $(!(sep [";{]) [^";{])+
 
