@@ -1772,7 +1772,7 @@ predicate
 
 // CHANGE simplify/reuse reference for quoted string
 predicate_expr
-  = (node_identifier / ".") WSP* "=" WSP* string_quoted_
+  = (node_identifier / ".") WSP* "=" WSP* string_quoted
 
 pos
   = non_negative_integer_value
@@ -2090,16 +2090,17 @@ identifier_xml_
 // CHANGE restrict unquoted: no inner quote, no semicolon, open curly bracket
 // CHANGE allow multiline strings, concatenated by +
 string
-  = string_quoted_
-  / string_unquoted_
+  = string_quoted
+  / string_unquoted
 
+string_quoted
+  = head:string_quoted_ tail:(optsep "+" optsep string_quoted_)* {
+    return buildList(head, tail, 3).join('');
+  }
+  
 string_quoted_
-  = DQUOTE head:$stringEscaped DQUOTE tail:(optsep "+" optsep DQUOTE $stringEscaped DQUOTE)* {
-    return buildList(head, tail, 4).join('');
-  }
-  / SQUOTE head:$(!SQUOTE .)* SQUOTE tail:(optsep "+" optsep SQUOTE $(!SQUOTE .)* SQUOTE)* {
-    return buildList(head, tail, 4).join('');
-  }
+  = DQUOTE s:$stringEscaped DQUOTE { return s; }
+  / SQUOTE s:$(!SQUOTE .)* SQUOTE  { return s; }
   
 stringEscaped
   = stringChar*
@@ -2108,7 +2109,7 @@ stringChar
   = "\\" "\""
   / !DQUOTE .
   
-string_unquoted_
+string_unquoted
   = $(!(sep [";{]) [^";{])+
 
 // unconditional separator
