@@ -1155,8 +1155,8 @@ unique_arg_str
   / unique_arg
 
 unique_arg
-  = h:descendant_schema_nodeid t:(sep descendant_schema_nodeid)* {
-    return buildList(h, t, 1);
+  = descendant_schema_nodeid (sep descendant_schema_nodeid)* {
+    return text();
   }
 
 choice_stmt
@@ -1682,8 +1682,8 @@ range_arg_str
   / range_arg
   
 range_arg
-  = h:range_part t:(optsep "|" optsep range_part)* {
-    return buildList(h, t, 3);
+  = range_part (optsep "|" optsep range_part)* {
+    return text();
   }
 
 range_part
@@ -2048,7 +2048,7 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_stmt
-  = k:unknow_prefix_key m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:$(prefix ":" identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_stmt",
 	    keyword:k,
@@ -2056,14 +2056,11 @@ unknown_stmt
 		subs:s
 	};
   }
-
-unknow_prefix_key 
-  = prefix ":" identifier { return text(); }
   
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
 unknown_stmt2
-  = k:unknow_key m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:$((prefix ":")? identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
 	    type:"unknown_stmt",
 	    keyword:k,
@@ -2071,9 +2068,6 @@ unknown_stmt2
 		subs:s
 	};
   }
-
-unknow_key 
-  = (prefix ":")? identifier { return text(); }
   
 unknown_stmt2_subs
  = ";" { return []; }
