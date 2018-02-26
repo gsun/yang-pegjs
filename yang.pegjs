@@ -36,7 +36,8 @@ module_stmt
 	  type:"module_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:h.concat(l,m,r,b)
+	  subs:h.concat(l,m,r,b),
+	  location: location()
 	};
   }
 
@@ -46,7 +47,8 @@ submodule_stmt
 	  type:"submodule_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:h.concat(l,m,r,b)
+	  subs:h.concat(l,m,r,b),
+	  location: location()
 	};
   }
 // these stmts can appear in any order
@@ -139,7 +141,8 @@ yang_version_stmt
 	  type:"yang_version_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -158,7 +161,8 @@ import_stmt
     type:"import_stmt",
 	keyword:k,
 	arg:a,
-	subs: extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p]
+	subs: extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p],
+	location: location()
   };
 }
 
@@ -168,7 +172,8 @@ include_stmt
 	  type:"include_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   } 
 
@@ -184,7 +189,8 @@ namespace_stmt
 	  type:"namespace_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -199,7 +205,8 @@ prefix_stmt
 	  type:"prefix_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -209,7 +216,8 @@ belongs_to_stmt
 	  type:"belongs_to_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[p]
+	  subs:[p],
+	  location: location()
 	};
   }
 
@@ -219,7 +227,8 @@ organization_stmt
 	  type:"organization_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -229,7 +238,8 @@ contact_stmt
 	  type:"contact_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -239,7 +249,8 @@ description_stmt
 	  type:"description_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -249,7 +260,8 @@ reference_stmt
 	  type:"reference_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -259,7 +271,8 @@ units_stmt
 	  type:"units_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -269,7 +282,8 @@ revision_stmt
 	  type:"revision_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -299,7 +313,8 @@ revision_date_stmt
 	  type:"revision_date_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -309,7 +324,8 @@ extension_stmt
 	  type:"extension_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -337,7 +353,8 @@ argument_stmt
 	  type:"argument_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   } 
 
@@ -353,7 +370,8 @@ yin_element_stmt
 	  type:"yin_element_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -372,7 +390,8 @@ identity_stmt
 	  type:"identity_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -400,7 +419,8 @@ base_stmt
 	  type:"base_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -410,7 +430,8 @@ feature_stmt
 	  type:"feature_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -438,7 +459,8 @@ if_feature_stmt
 	  type:"if_feature_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -448,7 +470,8 @@ typedef_stmt
 	  type:"typedef_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -474,7 +497,8 @@ type_stmt
 	  type:"type_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -515,7 +539,8 @@ range_stmt
 	  type:"range_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -547,7 +572,8 @@ fraction_digits_stmt
 	      type:"fraction_digits_stmt",
 		  keyword:k,
 		  arg:a,
-	      subs:[]
+	      subs:[],
+	      location: location()
 	  };
   }
 
@@ -580,7 +606,8 @@ length_stmt
 	  type:"length_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -608,7 +635,8 @@ pattern_stmt
 	  type:"pattern_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -636,7 +664,8 @@ default_stmt
 	  type:"default_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -651,7 +680,8 @@ enum_stmt
 	  type:"enum_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -682,7 +712,8 @@ path_stmt
 	  type:"path_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -692,7 +723,8 @@ require_instance_stmt
 	  type:"require_instance_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -728,7 +760,8 @@ bit_stmt
 	  type:"bit_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -756,7 +789,8 @@ position_stmt
 	  type:"position_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -774,7 +808,8 @@ status_stmt
 	  type:"status_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -794,7 +829,8 @@ config_stmt
 	  type:"config_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -813,7 +849,8 @@ mandatory_stmt
 	  type:"mandatory_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -832,7 +869,8 @@ presence_stmt
 	  type:"presence_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -842,7 +880,8 @@ ordered_by_stmt
 	  type:"ordered_by_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -861,7 +900,8 @@ must_stmt
 	  type:"must_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -889,7 +929,8 @@ error_message_stmt
 	  type:"error_message_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -899,7 +940,8 @@ error_app_tag_stmt
 	  type:"error_app_tag_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -909,7 +951,8 @@ min_elements_stmt
 	  type:"min_elements_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -927,7 +970,8 @@ max_elements_stmt
 	  type:"max_elements_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -946,7 +990,8 @@ value_stmt
 	  type:"value_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -964,7 +1009,8 @@ grouping_stmt
 	  type:"grouping_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -994,7 +1040,8 @@ container_stmt
 	  type:"container_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1029,7 +1076,8 @@ leaf_stmt
 	  type:"leaf_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1060,7 +1108,8 @@ leaf_list_stmt
 	  type:"leaf_list_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1092,7 +1141,8 @@ list_stmt
 	  type:"list_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
   
@@ -1127,7 +1177,8 @@ key_stmt
 	  type:"key_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -1145,7 +1196,8 @@ unique_stmt
 	  type:"unique_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -1165,7 +1217,8 @@ choice_stmt
 	  type:"choice_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1207,7 +1260,8 @@ case_stmt
 	  type:"case_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1237,7 +1291,8 @@ anyxml_stmt
 	  type:"anyxml_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1269,7 +1324,8 @@ uses_stmt
 	  type:"uses_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1300,7 +1356,8 @@ refine_stmt
 	  type:"refine_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1339,7 +1396,8 @@ uses_augment_stmt
 	  type:"uses_augment_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1374,7 +1432,8 @@ augment_stmt
 	  type:"augment_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1409,7 +1468,8 @@ when_stmt
 	  type:"when_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1435,7 +1495,8 @@ rpc_stmt
 	  type:"rpc_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1467,7 +1528,8 @@ input_stmt
 	  type:"input_stmt",
 	  keyword:k,
 	  arg:null,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1490,7 +1552,8 @@ output_stmt
 	  type:"output_stmt",
 	  keyword:k,
 	  arg:null,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1513,7 +1576,8 @@ notification_stmt
 	  type:"notification_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1544,7 +1608,8 @@ deviation_stmt
 	  type:"deviation_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1579,7 +1644,8 @@ deviate_not_supported_stmt
 	  type:"deviate_not_supported_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:[]
+	  subs:[],
+	  location: location()
 	};
   }
 
@@ -1589,7 +1655,8 @@ deviate_add_stmt
 	  type:"deviate_add_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1621,7 +1688,8 @@ deviate_delete_stmt
 	  type:"deviate_delete_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -1649,7 +1717,8 @@ deviate_replace_stmt
 	  type:"deviate_replace_stmt",
 	  keyword:k,
 	  arg:a,
-	  subs:s
+	  subs:s,
+	  location: location()
 	};
   }
 
@@ -2053,7 +2122,8 @@ unknown_stmt
 	    type:"unknown_stmt",
 	    keyword:k,
 		arg:extractOptional(m, 1),
-		subs:s
+		subs:s,
+	    location: location()
 	};
   }
   
@@ -2065,7 +2135,8 @@ unknown_stmt2
 	    type:"unknown_stmt",
 	    keyword:k,
 		arg:extractOptional(m, 1),
-		subs:s
+		subs:s,
+	    location: location()
 	};
   }
   
