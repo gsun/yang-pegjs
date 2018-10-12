@@ -24,6 +24,10 @@
   function buildList(head, tail, index) {
     return [head].concat(extractList(tail, index));
   }
+  
+  function concat(a) {
+    return a.flat();
+  }
 }
 
 start_rule
@@ -33,22 +37,22 @@ start_rule
 module_stmt
   = optsep k:module_keyword sep a:identifier_arg_str optsep "{" stmtsep h:module_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
-      type:"module_stmt",
-      keyword:k,
-      arg:a,
-      subs:h.concat(l,m,r,b),
-      location: location()
+      "type":"module_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":concat([h,l,m,r,b]),
+      "location": location()
     };
   }
 
 submodule_stmt
   = optsep k:submodule_keyword sep a:identifier_arg_str optsep "{" stmtsep h:submodule_header_stmts l:linkage_stmts m:meta_stmts r:revision_stmts b:body_stmts "}" optsep {
     return {
-      type:"submodule_stmt",
-      keyword:k,
-      arg:a,
-      subs:h.concat(l,m,r,b),
-      location: location()
+      "type":"submodule_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":concat([l,m,r,b]),
+      "location": location()
     };
   }
 // these stmts can appear in any order
@@ -138,11 +142,11 @@ data_def_stmt
 yang_version_stmt
   = k:yang_version_keyword sep a:yang_version_arg_str optsep stmtend {
     return {
-      type:"yang_version_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"yang_version_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -158,22 +162,22 @@ import_stmt
   = k:import_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep d:(revision_date_stmt stmtsep)?
 "}" {
   return {
-    type:"import_stmt",
-    keyword:k,
-    arg:a,
-    subs: extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p],
-    location: location()
+    "type":"import_stmt",
+    "keyword":k,
+    "arg":a,
+    "subs": extractOptional(d, 0) ? [p, extractOptional(d, 0)]:[p],
+    "location": location()
   };
 }
 
 include_stmt
   = k:include_keyword sep a:identifier_arg_str optsep s:include_stmt_subs { 
       return {
-      type:"include_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"include_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   } 
 
@@ -186,11 +190,11 @@ include_stmt_subs
 namespace_stmt
   = k:namespace_keyword sep a:uri_str optsep stmtend {
     return {
-      type:"namespace_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"namespace_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -202,88 +206,88 @@ uri_str
 prefix_stmt
   = k:prefix_keyword sep a:prefix_arg_str optsep stmtend {
     return {
-      type:"prefix_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"prefix_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 belongs_to_stmt
   = k:belongs_to_keyword sep a:identifier_arg_str optsep "{" stmtsep p:prefix_stmt stmtsep "}" {
     return {
-      type:"belongs_to_stmt",
-      keyword:k,
-      arg:a,
-      subs:[p],
-      location: location()
+      "type":"belongs_to_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[p],
+      "location": location()
     };
   }
 
 organization_stmt
   = k:organization_keyword sep a:string optsep stmtend {
     return {
-      type:"organization_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"organization_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 contact_stmt
   = k:contact_keyword sep a:string optsep stmtend {
     return {
-      type:"contact_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"contact_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 description_stmt
   = k:description_keyword sep a:string optsep stmtend {
     return {
-      type:"description_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"description_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 reference_stmt
   = k:reference_keyword sep a:string optsep stmtend {
     return {
-      type:"reference_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"reference_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 units_stmt
   = k:units_keyword sep a:string optsep stmtend {
     return {
-      type:"units_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"units_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 revision_stmt
   = k:revision_keyword sep a:revision_date optsep s:revision_stmt_subs {
     return {
-      type:"revision_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"revision_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -310,22 +314,22 @@ revision_date
 revision_date_stmt
   = k:revision_date_keyword sep a:revision_date stmtend {
     return {
-      type:"revision_date_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"revision_date_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 extension_stmt
   = k:extension_keyword sep a:identifier_arg_str optsep s:extension_stmt_subs {
     return {
-      type:"extension_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"extension_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -350,11 +354,11 @@ extension_stmt_sub_
 argument_stmt
   = k:argument_keyword sep a:identifier_arg_str optsep s:argument_stmt_subs {
     return {
-      type:"argument_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"argument_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   } 
 
@@ -367,11 +371,11 @@ argument_stmt_subs
 yin_element_stmt
   = k:yin_element_keyword sep a:yin_element_arg_str stmtend {
     return {
-      type:"yin_element_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"yin_element_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -387,11 +391,11 @@ yin_element_arg
 identity_stmt
   = k:identity_keyword sep a:identifier_arg_str optsep s:identity_stmt_subs {
     return {
-      type:"identity_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"identity_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -416,22 +420,22 @@ identity_stmt_sub_
 base_stmt
   = k:base_keyword sep a:$identifier_ref_arg_str optsep stmtend {
     return {
-      type:"base_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"base_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 feature_stmt
   = k:feature_keyword sep a:identifier_arg_str optsep s:feature_stmt_subs {
     return {
-      type:"feature_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"feature_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -456,22 +460,22 @@ feature_stmt_sub_
 if_feature_stmt
   = k:if_feature_keyword sep a:$identifier_ref_arg_str optsep stmtend {
     return {
-      type:"if_feature_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"if_feature_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 typedef_stmt
   = k:typedef_keyword sep a:identifier_arg_str optsep "{" stmtsep s:typedef_stmt_subs_ "}" {
     return {
-      type:"typedef_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"typedef_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -494,11 +498,11 @@ typedef_stmt_sub_
 type_stmt
   = k:type_keyword sep a:$identifier_ref_arg_str optsep s:type_body_stmts {
     return {
-      type:"type_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"type_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -536,11 +540,11 @@ numerical_restrictions
 range_stmt
   = k:range_keyword sep a:range_arg_str optsep s:range_stmt_subs {
     return {
-      type:"range_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"range_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -569,11 +573,11 @@ decimal64_specification
 fraction_digits_stmt
   = k:fraction_digits_keyword sep a:fraction_digits_arg_str stmtend {
       return {
-          type:"fraction_digits_stmt",
-          keyword:k,
-          arg:a,
-          subs:[],
-          location: location()
+          "type":"fraction_digits_stmt",
+          "keyword":k,
+          "arg":a,
+          "subs":[],
+          "location": location()
       };
   }
 
@@ -603,11 +607,11 @@ string_restriction_
 length_stmt
   = k:length_keyword sep a:length_arg_str optsep s:length_stmt_subs {
     return {
-      type:"length_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"length_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -632,11 +636,11 @@ length_stmt_sub_
 pattern_stmt
   = k:pattern_keyword sep a:string optsep s:pattern_stmt_subs {
     return {
-      type:"pattern_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"pattern_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -661,11 +665,11 @@ pattern_stmt_sub_
 default_stmt
   = k:default_keyword sep a:string stmtend {
     return {
-      type:"default_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"default_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -677,11 +681,11 @@ enum_specification
 enum_stmt
   = k:enum_keyword sep a:string optsep s:enum_stmt_subs {
     return {
-      type:"enum_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"enum_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -709,22 +713,22 @@ leafref_specification
 path_stmt
   = k:path_keyword sep a:path_arg_str stmtend {
     return {
-      type:"path_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"path_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 require_instance_stmt
   = k:require_instance_keyword sep a:require_instance_arg_str stmtend {
     return {
-      type:"require_instance_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"require_instance_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -757,11 +761,11 @@ bits_specification
 bit_stmt
   = k:bit_keyword sep a:identifier_arg_str optsep s:bit_stmt_subs {
     return {
-      type:"bit_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"bit_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -786,11 +790,11 @@ bit_stmt_sub_
 position_stmt
   = k:position_keyword sep a:position_value_arg_str stmtend {
     return {
-      type:"position_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"position_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -805,11 +809,11 @@ position_value_arg
 status_stmt
   = k:status_keyword sep a:status_arg_str stmtend {
     return {
-      type:"status_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"status_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -826,11 +830,11 @@ status_arg
 config_stmt
   = k:config_keyword sep a:config_arg_str stmtend {
     return {
-      type:"config_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"config_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -846,11 +850,11 @@ config_arg
 mandatory_stmt
   = k:mandatory_keyword sep a:mandatory_arg_str stmtend {
     return {
-      type:"mandatory_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"mandatory_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -866,22 +870,22 @@ mandatory_arg
 presence_stmt
   = k:presence_keyword sep a:string stmtend {
     return {
-      type:"presence_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"presence_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 ordered_by_stmt
   = k:ordered_by_keyword sep a:ordered_by_arg_str stmtend {
     return {
-      type:"ordered_by_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"ordered_by_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -897,11 +901,11 @@ ordered_by_arg
 must_stmt
   = k:must_keyword sep a:string optsep s:must_stmt_subs {
     return {
-      type:"must_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"must_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -926,33 +930,33 @@ must_stmt_sub_
 error_message_stmt
   = k:error_message_keyword sep a:string stmtend {
     return {
-      type:"error_message_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"error_message_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 error_app_tag_stmt
   = k:error_app_tag_keyword sep a:string stmtend {
     return {
-      type:"error_app_tag_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"error_app_tag_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 min_elements_stmt
   = k:min_elements_keyword sep a:min_value_arg_str stmtend {
     return {
-      type:"min_elements_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"min_elements_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -967,11 +971,11 @@ min_value_arg
 max_elements_stmt
   = k:max_elements_keyword sep a:max_value_arg_str stmtend {
     return {
-      type:"max_elements_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"max_elements_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -987,11 +991,11 @@ max_value_arg
 value_stmt
   = k:value_keyword sep a:integer_value_arg_str stmtend {
     return {
-      type:"value_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"value_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -1006,11 +1010,11 @@ integer_value_arg
 grouping_stmt
   = k:grouping_keyword sep a:identifier_arg_str optsep s:grouping_stmt_subs {
     return {
-      type:"grouping_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"grouping_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1037,11 +1041,11 @@ grouping_stmt_sub_
 container_stmt
   = k:container_keyword sep a:identifier_arg_str optsep s:container_stmt_subs {
     return {
-      type:"container_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"container_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1073,11 +1077,11 @@ container_stmt_sub_
 leaf_stmt
   = k:leaf_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_stmt_subs_ "}" {
     return {
-      type:"leaf_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"leaf_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1105,11 +1109,11 @@ leaf_stmt_sub_
 leaf_list_stmt
   = k:leaf_list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:leaf_list_stmt_subs_ "}" {
     return {
-      type:"leaf_list_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"leaf_list_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1138,11 +1142,11 @@ leaf_list_stmt_sub_
 list_stmt
   = k:list_keyword sep a:identifier_arg_str optsep "{" stmtsep s:list_stmt_subs_ "}" {
     return {
-      type:"list_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"list_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
   
@@ -1174,11 +1178,11 @@ list_stmt_sub_
 key_stmt
   = k:key_keyword sep a:key_arg_str stmtend {
     return {
-      type:"key_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"key_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -1193,11 +1197,11 @@ key_arg
 unique_stmt
   = k:unique_keyword sep a:unique_arg_str stmtend {
     return {
-      type:"unique_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"unique_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
@@ -1214,11 +1218,11 @@ unique_arg
 choice_stmt
   = k:choice_keyword sep a:identifier_arg_str optsep s:choice_stmt_subs {
     return {
-      type:"choice_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"choice_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1257,11 +1261,11 @@ short_case_stmt
 case_stmt
   = k:case_keyword sep a:identifier_arg_str optsep s:case_stmt_subs {
     return {
-      type:"case_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"case_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1288,11 +1292,11 @@ case_stmt_sub_
 anyxml_stmt
   = k:anyxml_keyword sep a:identifier_arg_str optsep s:anyxml_stmt_subs {
     return {
-      type:"anyxml_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"anyxml_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1321,11 +1325,11 @@ anyxml_stmt_sub_
 uses_stmt
   = k:uses_keyword sep a:$identifier_ref_arg_str optsep s:uses_stmt_subs {
     return {
-      type:"uses_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"uses_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1353,11 +1357,11 @@ uses_stmt_sub_
 refine_stmt
   = k:refine_keyword sep a:refine_arg_str optsep s:refine_stmt_subs {
     return {
-      type:"refine_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"refine_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1393,11 +1397,11 @@ refine_stmt_sub_
 uses_augment_stmt
   = k:augment_keyword sep a:uses_augment_arg_str optsep "{" stmtsep s:uses_augment_stmt_subs_ "}" {
     return {
-      type:"uses_augment_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"uses_augment_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1429,11 +1433,11 @@ uses_augment_arg
 augment_stmt
   = k:augment_keyword sep a:augment_arg_str optsep "{" stmtsep s:augment_stmt_subs_ "}" {
     return {
-      type:"augment_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"augment_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1465,11 +1469,11 @@ augment_arg
 when_stmt
   = k:when_keyword sep a:string optsep s:when_stmt_subs {
     return {
-      type:"when_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"when_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1492,11 +1496,11 @@ when_stmt_sub_
 rpc_stmt
   = k:rpc_keyword sep a:identifier_arg_str optsep s:rpc_stmt_subs {
     return {
-      type:"rpc_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"rpc_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1525,11 +1529,11 @@ rpc_stmt_sub_
 input_stmt
   = k:input_keyword optsep "{" stmtsep s:input_stmt_subs_ "}" {
     return {
-      type:"input_stmt",
-      keyword:k,
-      arg:null,
-      subs:s,
-      location: location()
+      "type":"input_stmt",
+      "keyword":k,
+      "arg":null,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1549,11 +1553,11 @@ input_stmt_sub_
 output_stmt
   = k:output_keyword optsep "{" stmtsep s:output_stmt_subs_ "}" {
     return {
-      type:"output_stmt",
-      keyword:k,
-      arg:null,
-      subs:s,
-      location: location()
+      "type":"output_stmt",
+      "keyword":k,
+      "arg":null,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1573,11 +1577,11 @@ output_stmt_sub_
 notification_stmt
   = k:notification_keyword sep a:identifier_arg_str optsep s:notification_stmt_subs {
     return {
-      type:"notification_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"notification_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1605,11 +1609,11 @@ notification_stmt_sub_
 deviation_stmt
   = k:deviation_keyword sep a:deviation_arg_str optsep "{" stmtsep s:deviation_stmt_subs_ "}" {
     return {
-      type:"deviation_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"deviation_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1641,22 +1645,22 @@ deviation_arg
 deviate_not_supported_stmt
   = k:deviate_keyword sep a:not_supported_keyword optsep (";" / "{" stmtsep "}") {
     return {
-      type:"deviate_not_supported_stmt",
-      keyword:k,
-      arg:a,
-      subs:[],
-      location: location()
+      "type":"deviate_not_supported_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":[],
+      "location": location()
     };
   }
 
 deviate_add_stmt
   = k:deviate_keyword sep a:add_keyword optsep s:deviate_add_stmt_subs {
     return {
-      type:"deviate_add_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"deviate_add_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1685,11 +1689,11 @@ deviate_add_stmt_sub_
 deviate_delete_stmt
   = k:deviate_keyword sep a:delete_keyword optsep s:deviate_delete_stmt_subs {
     return {
-      type:"deviate_delete_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"deviate_delete_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1714,11 +1718,11 @@ deviate_delete_stmt_sub_
 deviate_replace_stmt
   = k:deviate_keyword sep a:replace_keyword optsep s:deviate_replace_stmt_subs {
     return {
-      type:"deviate_replace_stmt",
-      keyword:k,
-      arg:a,
-      subs:s,
-      location: location()
+      "type":"deviate_replace_stmt",
+      "keyword":k,
+      "arg":a,
+      "subs":s,
+      "location": location()
     };
   }
 
@@ -1757,7 +1761,7 @@ range_arg
 
 range_part
   = h:range_boundary t:(optsep ".." optsep range_boundary)? {
-    return [h].concat(extractOptional(t, 3));
+    return concat([h, extractOptional(t, 3)]);
   }
 
 range_boundary
@@ -1779,7 +1783,7 @@ length_arg
 
 length_part
   = h:length_boundary t:(optsep ".." optsep length_boundary)? {
-    return [h].concat(extractOptional(t, 3));
+    return concat([h,extractOptional(t, 3)]);
   }
 
 length_boundary
@@ -1802,14 +1806,14 @@ date_arg
 schema_nodeid
   = a:absolute_schema_nodeid {
     return {
-        type:"absolute_node",
-        list:a
+        "type":"absolute_node",
+        "list":a
     };
   }
   / d:descendant_schema_nodeid {
     return {
-        type:"descendant_node",
-        list:d
+        "type":"descendant_node",
+        "list":d
     };
   }
 
@@ -1820,14 +1824,14 @@ absolute_schema_nodeid
 
 descendant_schema_nodeid
   = n:node_identifier a:(absolute_schema_nodeid)? {
-    return [n].concat(extractOptional(a, 0));
+    return concat([n,extractOptional(a, 0)]);
   }
 
 node_identifier
   = p:(prefix ":")? i:identifier {
     return { 
-        prefix:extractOptional(p, 0),
-        name:i
+        "prefix":extractOptional(p, 0),
+        "name":i
     };
   }
 
@@ -2072,8 +2076,8 @@ identifier_ref_arg_str
 identifier_ref_arg
   = p:(prefix ":")? i:identifier {
     return { 
-        prefix:extractOptional(p, 0),
-        id:i
+        "prefix":extractOptional(p, 0),
+        "id":i
     };
   }
 
@@ -2119,11 +2123,11 @@ decimal_value
 unknown_stmt
   = k:$(prefix ":" identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
-        type:"unknown_stmt",
-        keyword:k,
-        arg:extractOptional(m, 1),
-        subs:s,
-        location: location()
+        "type":"unknown_stmt",
+        "keyword":k,
+        "arg":extractOptional(m, 1),
+        "subs":s,
+        "location": location()
     };
   }
   
@@ -2132,11 +2136,11 @@ unknown_stmt
 unknown_stmt2
   = k:$((prefix ":")? identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
     return {
-        type:"unknown_stmt",
-        keyword:k,
-        arg:extractOptional(m, 1),
-        subs:s,
-        location: location()
+        "type":"unknown_stmt",
+        "keyword":k,
+        "arg":extractOptional(m, 1),
+        "subs":s,
+        "location": location()
     };
   }
   
