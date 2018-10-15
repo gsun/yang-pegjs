@@ -22,7 +22,7 @@
   }
 
   function buildList(head, tail, index) {
-    return [head].concat(extractList(tail, index));
+    return [head,extractList(tail, index)].flat();
   }
 }
 
@@ -36,7 +36,7 @@ module_stmt
       type:"module_stmt",
       keyword:k,
       arg:a,
-      subs:h.concat(l,m,r,b),
+      subs:[h,l,m,r,b].flat(),
       location: location()
     };
   }
@@ -47,7 +47,7 @@ submodule_stmt
       type:"submodule_stmt",
       keyword:k,
       arg:a,
-      subs:h.concat(l,m,r,b),
+      subs:[h,l,m,r,b].flat(),
       location: location()
     };
   }
@@ -1757,7 +1757,7 @@ range_arg
 
 range_part
   = h:range_boundary t:(optsep ".." optsep range_boundary)? {
-    return [h].concat(extractOptional(t, 3));
+    return [h,extractOptional(t, 3)].flat();
   }
 
 range_boundary
@@ -1779,7 +1779,7 @@ length_arg
 
 length_part
   = h:length_boundary t:(optsep ".." optsep length_boundary)? {
-    return [h].concat(extractOptional(t, 3));
+    return [h,extractOptional(t, 3)].flat();
   }
 
 length_boundary
@@ -1820,7 +1820,7 @@ absolute_schema_nodeid
 
 descendant_schema_nodeid
   = n:node_identifier a:(absolute_schema_nodeid)? {
-    return [n].concat(extractOptional(a, 0));
+    return [n,extractOptional(a, 0)].flat();
   }
 
 node_identifier
