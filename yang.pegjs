@@ -22,7 +22,7 @@
   }
 
   function buildList(head, tail, index) {
-    return [head,extractList(tail, index)].flat();
+    return [head].concat(extractList(tail, index));
   }
 }
 
@@ -36,7 +36,7 @@ module_stmt
       type:"module_stmt",
       keyword:k,
       arg:a,
-      subs:[h,l,m,r,b].flat(),
+      subs:h.concat(l,m,r,b),
       location: location()
     };
   }
@@ -47,7 +47,7 @@ submodule_stmt
       type:"submodule_stmt",
       keyword:k,
       arg:a,
-      subs:[h,l,m,r,b].flat(),
+      subs:h.concat(l,m,r,b),
       location: location()
     };
   }
@@ -630,7 +630,7 @@ length_stmt_sub_
   / unknown_stmt
   
 pattern_stmt
-  = k:pattern_keyword sep a:pattern_arg optsep s:pattern_stmt_subs {
+  = k:pattern_keyword sep a:string optsep s:pattern_stmt_subs {
     return {
       type:"pattern_stmt",
       keyword:k,
@@ -1761,7 +1761,7 @@ range_arg
 
 range_part
   = h:range_boundary t:(optsep ".." optsep range_boundary)? {
-    return [h,extractOptional(t, 3)].flat();
+    return [h].concat(extractOptional(t, 3));
   }
 
 range_boundary
@@ -1783,7 +1783,7 @@ length_arg
 
 length_part
   = h:length_boundary t:(optsep ".." optsep length_boundary)? {
-    return [h,extractOptional(t, 3)].flat();
+    return [h].concat(extractOptional(t, 3));
   }
 
 length_boundary
@@ -1824,7 +1824,7 @@ absolute_schema_nodeid
 
 descendant_schema_nodeid
   = n:node_identifier a:(absolute_schema_nodeid)? {
-    return [n,extractOptional(a, 0)].flat();
+    return [n].concat(extractOptional(a, 0));
   }
 
 node_identifier
