@@ -630,7 +630,7 @@ length_stmt_sub_
   / unknown_stmt
   
 pattern_stmt
-  = k:pattern_keyword sep a:string optsep s:pattern_stmt_subs {
+  = k:pattern_keyword sep a:pattern_arg optsep s:pattern_stmt_subs {
     return {
       type:"pattern_stmt",
       keyword:k,
@@ -640,6 +640,10 @@ pattern_stmt
     };
   }
 
+pattern_arg
+  = DQUOTE r:RegexpChoiceExpr DQUOTE { return r; }
+  / SQUOTE r:RegexpChoiceExpr SQUOTE { return r; }
+  
 pattern_stmt_subs 
   = ";" { return []; }
   / "{" stmtsep s:pattern_stmt_subs_ "}" { return s; }
@@ -2509,3 +2513,62 @@ VCHAR
 WSP
   = SP
   / HTAB
+  
+  
+/* regexp in xml schema for pattern_stmt*/
+
+RegexpChoiceExpr
+  = RegexpSequenceExpr ('|' RegexpSequenceExpr)* { return text(); }
+  
+RegexpSequenceExpr
+  = RegexpQualifiedExpr+
+  
+RegexpQualifiedExpr
+  = RegexpPrimaryExpr  RegexpQualifier?
+  
+RegexpQualifier
+  = '*' 
+  / '+' 
+  / '?' 
+  / '{' zero_integer_value ',' zero_integer_value '}' 
+  / '{' zero_integer_value ',}' 
+  / '{' zero_integer_value '}'
+  
+RegexpPrimaryExpr
+  =  RegexpClassExpr
+  / RegexpGroupExpr
+  / RegexpSingleCharExpr
+    
+RegexpClassExpr 
+  = '[^' RegexpClassSubExpr+ ']'
+  / '[' RegexpClassSubExpr+ ']'
+  / '[]'
+
+RegexpGroupExpr
+  = '(' RegexpChoiceExpr ')'
+  
+RegexpClassSubExpr 
+  = RegexpRangeExpr
+  / RegexpRangeSingleCharExpr
+
+RegexpRangeExpr 
+  = RegexpRangeSingleCharExpr '-' RegexpRangeSingleCharExpr
+  
+RegexpRangeSingleCharExpr
+  = '\\' RegexpSingleCharEscape
+  / [^\\\]\-]
+
+RegexpSingleCharExpr
+  = '\\' RegexpSingleCharEscape
+  / '.'
+  / [^^$\\.*+?()[\]{}|\'\"]
+
+RegexpSingleCharEscape 
+  = RegexpCharacterClassEscape
+  / RegexpCharacterEscape
+  
+RegexpCharacterClassEscape
+  = [dDsSwWiIcC] 
+
+RegexpCharacterEscape
+  = ![$_] .
