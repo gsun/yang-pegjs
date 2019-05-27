@@ -1355,7 +1355,7 @@ uses_stmt_sub_
   / unknown_stmt
   
 refine_stmt
-  = k:refine_keyword sep a:refine_arg_str optsep s:refine_stmt_subs {
+  = k:refine_keyword sep a:$refine_arg_str optsep s:refine_stmt_subs {
     return {
       type:"refine_stmt",
       keyword:k,
