@@ -2121,7 +2121,7 @@ decimal_value
 // CHANGE allow optsep after
 // CHANGE group "prefix:" for action simplification
 unknown_stmt
-  = k:$(prefix ":" identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:$(prefix ":" identifier) m:(sep string)? optsep s:unknown_stmt_subs optsep {
     return {
         type:"unknown_stmt",
         keyword:k,
@@ -2133,8 +2133,13 @@ unknown_stmt
   
 // CHANGE allow stmtsep before and after
 // CHANGE allow optsep after
+
+unknown_stmt_sub
+   = description_stmt
+   / unknown_stmt2
+
 unknown_stmt2
-  = k:$((prefix ":")? identifier) m:(sep string)? optsep s:unknown_stmt2_subs optsep {
+  = k:$((prefix ":")? identifier) m:(sep string)? optsep s:unknown_stmt_subs optsep {
     return {
         type:"unknown_stmt",
         keyword:k,
@@ -2144,9 +2149,9 @@ unknown_stmt2
     };
   }
   
-unknown_stmt2_subs
+unknown_stmt_subs
  = ";" { return []; }
- / "{" stmtsep_no_stmt_ sub:(unknown_stmt2 stmtsep_no_stmt_)* "}" {
+ / "{" stmtsep_no_stmt_ sub:(unknown_stmt_sub stmtsep_no_stmt_)* "}" {
    return extractList(sub, 0);
  }
  
