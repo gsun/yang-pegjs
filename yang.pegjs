@@ -1350,7 +1350,7 @@ uses_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-  / refine_stmt
+  / uses_refine_stmt
   / uses_augment_stmt
   / unknown_stmt
   
@@ -1358,6 +1358,17 @@ refine_stmt
   = k:refine_keyword sep a:$refine_arg_str optsep s:refine_stmt_subs {
     return {
       type:"refine_stmt",
+      keyword:k,
+      arg:a,
+      subs:s,
+      location: location()
+    };
+  }
+  
+uses_refine_stmt
+  = k:refine_keyword sep a:$refine_arg_str optsep s:refine_stmt_subs {
+    return {
+      type:"uses_refine_stmt",
       keyword:k,
       arg:a,
       subs:s,
