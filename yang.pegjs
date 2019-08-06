@@ -1246,7 +1246,15 @@ choice_stmt_sub_
   / status_stmt
   / description_stmt
   / reference_stmt
-  / short_case_stmt
+  / s:short_case_stmt {
+    return {
+      type:"case_stmt",
+      keyword:'case',
+      arg:s.arg,
+      subs:[s],
+      location: s.location
+    };
+  }
   / case_stmt
   / unknown_stmt
   
