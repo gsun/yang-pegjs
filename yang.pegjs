@@ -1264,7 +1264,6 @@ short_case_stmt
   / leaf_list_stmt
   / list_stmt
   / anyxml_stmt
-  / unknown_stmt
   
 case_stmt
   = k:case_keyword sep a:identifier_arg_str optsep s:case_stmt_subs {
